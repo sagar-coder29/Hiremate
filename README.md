@@ -20,28 +20,33 @@ A modern, visually stunning job marketplace platform where customers can find an
 
 ## 📸 Screenshots
 
+> **Note:** Screenshots will be added after deployment. To add your own screenshots:
+> 1. Take screenshots of each page
+> 2. Save them as PNG files in `static/images/screenshots/`
+> 3. Update the image paths below
+
 ### Home Page
-![Home Page](https://raw.githubusercontent.com/sagar-coder29/Hiremate/main/static/images/screenshots/home-hero.png)
+![Home Page](https://via.placeholder.com/1200x600/2563eb/ffffff?text=HireMate+Home+Page)
 *Modern hero section with 3D animated background*
 
 ### Login Page
-![Login](https://raw.githubusercontent.com/sagar-coder29/Hiremate/main/static/images/screenshots/login.png)
+![Login](https://via.placeholder.com/800x500/1d4ed8/ffffff?text=Login+Page)
 *Clean and intuitive authentication interface*
 
 ### Worker List
-![Workers](https://raw.githubusercontent.com/sagar-coder29/Hiremate/main/static/images/screenshots/workers.png)
+![Workers](https://via.placeholder.com/1200x600/2563eb/ffffff?text=Worker+Listing+Page)
 *Browse and filter service providers*
 
 ### Worker Profile
-![Profile](https://raw.githubusercontent.com/sagar-coder29/Hiremate/main/static/images/screenshots/profile.png)
+![Profile](https://via.placeholder.com/800x600/1d4ed8/ffffff?text=Worker+Profile)
 *Detailed worker profiles with ratings*
 
 ### Dashboard
-![Dashboard](https://raw.githubusercontent.com/sagar-coder29/Hiremate/main/static/images/screenshots/dashboard.png)
+![Dashboard](https://via.placeholder.com/1200x600/2563eb/ffffff?text=User+Dashboard)
 *Personalized dashboard for users*
 
 ### Booking Flow
-![Booking](https://raw.githubusercontent.com/sagar-coder29/Hiremate/main/static/images/screenshots/booking.png)
+![Booking](https://via.placeholder.com/800x500/1d4ed8/ffffff?text=Booking+Page)
 *Simple and intuitive booking process*
 
 ---
