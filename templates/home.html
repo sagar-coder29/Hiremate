@@ -1,0 +1,185 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}HireMate - Find Trusted Local Service Professionals{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <!-- 3D Animated Background -->
+    <div class="hero-bg-3d">
+        <div class="floating-shape shape-1"></div>
+        <div class="floating-shape shape-2"></div>
+        <div class="floating-shape shape-3"></div>
+        <div class="floating-shape shape-4"></div>
+        <div class="floating-shape shape-5"></div>
+    </div>
+
+    <!-- 3D Geometric Objects -->
+    <div class="hero-3d-object cube">
+        <div class="face front"></div>
+        <div class="face back"></div>
+        <div class="face right"></div>
+        <div class="face left"></div>
+        <div class="face top"></div>
+        <div class="face bottom"></div>
+    </div>
+    <div class="hero-3d-object cube cube-2">
+        <div class="face front"></div>
+        <div class="face back"></div>
+        <div class="face right"></div>
+        <div class="face left"></div>
+        <div class="face top"></div>
+        <div class="face bottom"></div>
+    </div>
+    <div class="hero-3d-object cube cube-3">
+        <div class="face front"></div>
+        <div class="face back"></div>
+        <div class="face right"></div>
+        <div class="face left"></div>
+        <div class="face top"></div>
+        <div class="face bottom"></div>
+    </div>
+
+    <!-- Floating Particles -->
+    <div class="hero-particles">
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+    </div>
+
+    <!-- Orbit Rings -->
+    <div class="orbit-ring orbit-ring-1">
+        <div class="orbit-dot"></div>
+    </div>
+    <div class="orbit-ring orbit-ring-2">
+        <div class="orbit-dot"></div>
+    </div>
+
+    <!-- Grid Overlay -->
+    <div class="hero-grid"></div>
+
+    <div class="container">
+        <div class="hero-content">
+            <h1 class="hero-title">Find Trusted <span class="text-gradient">Service Professionals</span> Near You</h1>
+            <p class="hero-subtitle">Book electricians, plumbers, carpenters, and more — all verified and rated by your community.</p>
+            <div class="hero-actions">
+                <a href="{% url 'profiles:worker_list' %}" class="btn btn-primary btn-lg">
+                    <i class="fas fa-search"></i> Find Workers
+                </a>
+                <a href="{% url 'accounts:register_worker' %}" class="btn btn-outline btn-lg">
+                    <i class="fas fa-briefcase"></i> Join as Worker
+                </a>
+            </div>
+            <div class="hero-stats">
+                <div class="stat">
+                    <span class="stat-number" data-count="500">0</span>
+                    <span class="stat-label">Workers</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-number" data-count="10">0</span>
+                    <span class="stat-label">Services</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-number" data-count="10">0</span>
+                    <span class="stat-label">States</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="services-section">
+    <div class="container">
+        <h2 class="section-title fade-in">Our Services</h2>
+        <p class="section-subtitle fade-in">Professional services at your fingertips</p>
+        <div class="services-grid">
+            <a href="{% url 'profiles:worker_list' %}?service=electrician" class="service-card fade-in fade-in-delay-1">
+                <div class="service-icon"><i class="fas fa-bolt"></i></div>
+                <h3>Electrician</h3>
+                <p>Wiring, repairs, installations</p>
+            </a>
+            <a href="{% url 'profiles:worker_list' %}?service=plumber" class="service-card fade-in fade-in-delay-2">
+                <div class="service-icon"><i class="fas fa-wrench"></i></div>
+                <h3>Plumber</h3>
+                <p>Pipes, fixtures, drainage</p>
+            </a>
+            <a href="{% url 'profiles:worker_list' %}?service=carpenter" class="service-card fade-in fade-in-delay-3">
+                <div class="service-icon"><i class="fas fa-hammer"></i></div>
+                <h3>Carpenter</h3>
+                <p>Furniture, woodwork, cabinets</p>
+            </a>
+            <a href="{% url 'profiles:worker_list' %}?service=painter" class="service-card fade-in fade-in-delay-4">
+                <div class="service-icon"><i class="fas fa-paint-roller"></i></div>
+                <h3>Painter</h3>
+                <p>Interior, exterior, decorative</p>
+            </a>
+            <a href="{% url 'profiles:worker_list' %}?service=cleaner" class="service-card fade-in fade-in-delay-1">
+                <div class="service-icon"><i class="fas fa-broom"></i></div>
+                <h3>Cleaner</h3>
+                <p>Deep cleaning, maintenance</p>
+            </a>
+            <a href="{% url 'profiles:worker_list' %}?service=mechanic" class="service-card fade-in fade-in-delay-2">
+                <div class="service-icon"><i class="fas fa-car"></i></div>
+                <h3>Mechanic</h3>
+                <p>Vehicle repair, servicing</p>
+            </a>
+            <a href="{% url 'profiles:worker_list' %}?service=gardener" class="service-card fade-in fade-in-delay-3">
+                <div class="service-icon"><i class="fas fa-leaf"></i></div>
+                <h3>Gardener</h3>
+                <p>Landscaping, lawn care</p>
+            </a>
+            <a href="{% url 'profiles:worker_list' %}?service=ac_repair" class="service-card fade-in fade-in-delay-4">
+                <div class="service-icon"><i class="fas fa-snowflake"></i></div>
+                <h3>AC Repair</h3>
+                <p>Installation, servicing, gas refill</p>
+            </a>
+        </div>
+    </div>
+</section>
+
+<section class="how-it-works">
+    <div class="container">
+        <h2 class="section-title fade-in">How It Works</h2>
+        <p class="section-subtitle fade-in">Simple steps to get the help you need</p>
+        <div class="steps-grid">
+            <div class="step-card fade-in fade-in-delay-1">
+                <div class="step-number">1</div>
+                <h3>Search</h3>
+                <p>Browse workers by service, location, price, or rating.</p>
+            </div>
+            <div class="step-card fade-in fade-in-delay-3">
+                <div class="step-number">2</div>
+                <h3>Book</h3>
+                <p>Send a booking request with your preferred date and time.</p>
+            </div>
+            <div class="step-card fade-in fade-in-delay-5">
+                <div class="step-number">3</div>
+                <h3>Get It Done</h3>
+                <p>Worker accepts, completes the job, and you rate the service.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="cta-section">
+    <div class="container">
+        <div class="cta-content fade-in">
+            <h2>Ready to Get Started?</h2>
+            <p>Join HireMate today and connect with skilled professionals in your area.</p>
+            <div class="cta-actions">
+                <a href="{% url 'accounts:register_customer' %}" class="btn btn-primary btn-lg">Sign Up as Customer</a>
+                <a href="{% url 'accounts:register_worker' %}" class="btn btn-outline btn-lg">Register as Worker</a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

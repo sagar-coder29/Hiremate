@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block title %}Rate Worker - HireMate{% endblock %}
+
+{% block content %}
+<section class="rating-section">
+    <div class="container">
+        <a href="{% url 'bookings:booking_detail' booking.pk %}" class="back-link"><i class="fas fa-arrow-left"></i> Back to Booking</a>
+
+        <div class="form-card fade-in">
+            <h2><i class="fas fa-star"></i> Rate Your Experience</h2>
+            <p class="form-subtitle">How was your experience with {{ booking.worker.user.get_full_name }}?</p>
+
+            <div class="rating-worker-info">
+                <div class="worker-avatar-sm"><i class="fas fa-user-circle"></i></div>
+                <div>
+                    <strong>{{ booking.worker.user.get_full_name }}</strong>
+                    <span class="service-badge">{{ booking.worker.get_service_type_display }}</span>
+                </div>
+            </div>
+
+            <form method="post" class="styled-form rating-form">
+                {% csrf_token %}
+                <div class="star-rating-input">
+                    <p>Select your rating:</p>
+                    <div class="star-select" id="starSelect">
+                        {% for choice in form.score.field.choices %}
+                        <label class="star-label">
+                            <input type="radio" name="score" value="{{ choice.0 }}" {% if form.score.value == choice.0|stringformat:"d" %}checked{% endif %}>
+                            <i class="fas fa-star"></i>
+                        </label>
+                        {% endfor %}
+                    </div>
+                    {% if form.score.errors %}
+                    <div class="field-error">{{ form.score.errors.0 }}</div>
+                    {% endif %}
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Submit Rating</button>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const stars = document.querySelectorAll('.star-label');
+    stars.forEach(function(star, index) {
+        star.addEventListener('mouseenter', function() {
+            for (let i = 0; i <= index; i++) {
+                stars[i].classList.add('hovered');
+            }
+            for (let i = index + 1; i < stars.length; i++) {
+                stars[i].classList.remove('hovered');
+            }
+        });
+        star.addEventListener('mouseleave', function() {
+            stars.forEach(function(s) { s.classList.remove('hovered'); });
+        });
+    });
+});
+</script>
+{% endblock %}

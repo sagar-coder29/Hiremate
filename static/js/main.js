@@ -1,0 +1,238 @@
+document.addEventListener('DOMContentLoaded', function () {
+    // Mobile nav toggle
+    var navToggle = document.getElementById('navToggle');
+    var navLinks = document.getElementById('navLinks');
+    if (navToggle && navLinks) {
+        navToggle.addEventListener('click', function () {
+            navLinks.classList.toggle('active');
+        });
+        document.addEventListener('click', function (e) {
+            if (!navToggle.contains(e.target) && !navLinks.contains(e.target)) {
+                navLinks.classList.remove('active');
+            }
+        });
+    }
+
+    // Scroll-triggered fade-in animations
+    var fadeElements = document.querySelectorAll('.fade-in');
+    if ('IntersectionObserver' in window) {
+        var observer = new IntersectionObserver(
+            function (entries) {
+                entries.forEach(function (entry) {
+                    if (entry.isIntersecting) {
+                        entry.target.style.animationPlayState = 'running';
+                        observer.unobserve(entry.target);
+                    }
+                });
+            },
+            { threshold: 0.1 }
+        );
+        fadeElements.forEach(function (el) {
+            el.style.animationPlayState = 'paused';
+            observer.observe(el);
+        });
+    }
+
+    // Animated counter for hero stats
+    var counters = document.querySelectorAll('.stat-number[data-count]');
+    if (counters.length > 0) {
+        var counterStarted = false;
+        var counterObserver = new IntersectionObserver(
+            function (entries) {
+                entries.forEach(function (entry) {
+                    if (entry.isIntersecting && !counterStarted) {
+                        counterStarted = true;
+                        counters.forEach(function (counter) {
+                            var target = parseInt(counter.getAttribute('data-count'), 10);
+                            var duration = 2000;
+                            var step = Math.ceil(target / (duration / 16));
+                            var current = 0;
+                            var suffix = target >= 500 ? '+' : '+';
+                            function update() {
+                                current += step;
+                                if (current >= target) {
+                                    current = target;
+                                    counter.textContent = current + suffix;
+                                    return;
+                                }
+                                counter.textContent = current + suffix;
+                                requestAnimationFrame(update);
+                            }
+                            requestAnimationFrame(update);
+                        });
+                    }
+                });
+            },
+            { threshold: 0.5 }
+        );
+        var heroStats = document.querySelector('.hero-stats');
+        if (heroStats) {
+            counterObserver.observe(heroStats);
+        }
+    }
+
+    // Parallax effect on hero background elements
+    var hero = document.querySelector('.hero');
+    if (hero) {
+        var shapes = hero.querySelectorAll('.floating-shape');
+        var particles = hero.querySelectorAll('.particle');
+        window.addEventListener('scroll', function () {
+            var scrollY = window.scrollY;
+            var heroHeight = hero.offsetHeight;
+            if (scrollY < heroHeight) {
+                var ratio = scrollY / heroHeight;
+                shapes.forEach(function (shape, i) {
+                    var speed = 0.3 + (i * 0.1);
+                    shape.style.transform = 'translateY(' + (scrollY * speed) + 'px)';
+                });
+                particles.forEach(function (p, i) {
+                    var speed = 0.1 + (i * 0.05);
+                    p.style.transform = 'translateY(' + (scrollY * speed) + 'px)';
+                });
+            }
+        }, { passive: true });
+    }
+
+    // Mouse-move parallax on hero for 3D depth effect
+    if (hero) {
+        var cubes = hero.querySelectorAll('.hero-3d-object');
+        var orbitRings = hero.querySelectorAll('.orbit-ring');
+        var shapes = hero.querySelectorAll('.floating-shape');
+        var particles = hero.querySelectorAll('.particle');
+        var nebulas = hero.querySelectorAll('.nebula');
+        var tori = hero.querySelectorAll('.torus, .torus-2');
+        var spheres = hero.querySelectorAll('.sphere, .sphere-2');
+        var octahedrons = hero.querySelectorAll('.octahedron, .octahedron-2');
+        var heroContent = hero.querySelector('.hero-content');
+        var heroBg = hero.querySelector('.hero-bg-3d');
+
+        hero.addEventListener('mousemove', function (e) {
+            var rect = hero.getBoundingClientRect();
+            var x = (e.clientX - rect.left) / rect.width - 0.5;
+            var y = (e.clientY - rect.top) / rect.height - 0.5;
+
+            cubes.forEach(function (cube, i) {
+                var factor = 30 + (i * 15);
+                var baseTransform = getComputedStyle(cube).transform;
+                cube.style.transform = 'translate(' + (x * factor) + 'px, ' + (y * factor) + 'px)';
+            });
+
+            orbitRings.forEach(function (ring, i) {
+                var factor = 15 + (i * 8);
+                if (!ring._origML) ring._origML = parseInt(getComputedStyle(ring).marginLeft) || -250;
+                if (!ring._origMT) ring._origMT = parseInt(getComputedStyle(ring).marginTop) || -250;
+                ring.style.marginLeft = (ring._origML + (x * factor)) + 'px';
+                ring.style.marginTop = (ring._origMT + (y * factor)) + 'px';
+            });
+
+            shapes.forEach(function (shape, i) {
+                var factor = 8 + (i * 4);
+                shape.style.transform = 'translate(' + (x * factor) + 'px, ' + (y * factor) + 'px)';
+            });
+
+            particles.forEach(function (p, i) {
+                var factor = 3 + (i * 1.5);
+                p.style.transform = 'translate(' + (x * factor) + 'px, ' + (y * factor) + 'px)';
+            });
+
+            nebulas.forEach(function (nebula, i) {
+                var factor = 20 + (i * 10);
+                nebula.style.transform = 'translate(' + (x * factor) + 'px, ' + (y * factor) + 'px)';
+            });
+
+            tori.forEach(function (torus, i) {
+                var factor = 25 + (i * 12);
+                torus.style.transform = 'translate(' + (x * factor) + 'px, ' + (y * factor) + 'px)';
+            });
+
+            spheres.forEach(function (sphere, i) {
+                var factor = 18 + (i * 8);
+                sphere.style.transform = 'translate(' + (x * factor) + 'px, ' + (y * factor) + 'px)';
+            });
+
+            octahedrons.forEach(function (oct, i) {
+                var factor = 22 + (i * 10);
+                oct.style.transform = 'translate(' + (x * factor) + 'px, ' + (y * factor) + 'px)';
+            });
+
+            if (heroContent) {
+                heroContent.style.transform = 'translate(' + (x * 5) + 'px, ' + (y * 5) + 'px)';
+            }
+
+            if (heroBg) {
+                heroBg.style.transform = 'rotateY(' + (x * 3) + 'deg) rotateX(' + (-y * 3) + 'deg)';
+            }
+        });
+
+        hero.addEventListener('mouseleave', function () {
+            cubes.forEach(function (cube) {
+                cube.style.transform = '';
+            });
+            orbitRings.forEach(function (ring) {
+                if (ring._origML) ring.style.marginLeft = ring._origML + 'px';
+                if (ring._origMT) ring.style.marginTop = ring._origMT + 'px';
+            });
+            shapes.forEach(function (shape) {
+                shape.style.transform = '';
+            });
+            particles.forEach(function (p) {
+                p.style.transform = '';
+            });
+            nebulas.forEach(function (nebula) {
+                nebula.style.transform = '';
+            });
+            tori.forEach(function (torus) {
+                torus.style.transform = '';
+            });
+            spheres.forEach(function (sphere) {
+                sphere.style.transform = '';
+            });
+            octahedrons.forEach(function (oct) {
+                oct.style.transform = '';
+            });
+            if (heroContent) {
+                heroContent.style.transform = '';
+            }
+            if (heroBg) {
+                heroBg.style.transform = '';
+            }
+        });
+    }
+
+    // Tilt effect on service cards
+    var serviceCards = document.querySelectorAll('.service-card');
+    serviceCards.forEach(function (card) {
+        card.addEventListener('mousemove', function (e) {
+            var rect = card.getBoundingClientRect();
+            var x = (e.clientX - rect.left) / rect.width;
+            var y = (e.clientY - rect.top) / rect.height;
+            var tiltX = (0.5 - y) * 10;
+            var tiltY = (x - 0.5) * 10;
+            card.style.transform = 'translateY(-6px) perspective(600px) rotateX(' + tiltX + 'deg) rotateY(' + tiltY + 'deg)';
+        });
+        card.addEventListener('mouseleave', function () {
+            card.style.transform = '';
+        });
+    });
+
+    // Auto-dismiss alerts after 5 seconds
+    var alerts = document.querySelectorAll('.alert');
+    alerts.forEach(function (alert) {
+        setTimeout(function () {
+            alert.style.opacity = '0';
+            alert.style.transform = 'translateY(-10px)';
+            setTimeout(function () {
+                alert.remove();
+            }, 300);
+        }, 5000);
+    });
+
+    // Filter auto-submit
+    var filterSelects = document.querySelectorAll('.filter-select');
+    filterSelects.forEach(function (sel) {
+        sel.addEventListener('change', function () {
+            var form = sel.closest('form');
+            if (form) form.submit();
+        });
+    });
+});

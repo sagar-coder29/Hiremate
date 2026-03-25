@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - HireMate{% endblock %}
+
+{% block content %}
+<section class="dashboard-section">
+    <div class="container">
+        <div class="dashboard-header fade-in">
+            <h1>Welcome, {{ user.get_full_name|default:user.username }}!</h1>
+            <span class="role-badge role-{{ user.role }}">{{ user.get_role_display }}</span>
+        </div>
+
+        <div class="dashboard-grid fade-in">
+            {% if user.is_worker %}
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-clock"></i></div>
+                    <div class="stat-info">
+                        <span class="stat-value">{{ pending_bookings|default:0 }}</span>
+                        <span class="stat-label">Pending Requests</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon accent"><i class="fas fa-check-circle"></i></div>
+                    <div class="stat-info">
+                        <span class="stat-value">{{ active_bookings|default:0 }}</span>
+                        <span class="stat-label">Active Jobs</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon success"><i class="fas fa-trophy"></i></div>
+                    <div class="stat-info">
+                        <span class="stat-value">{{ completed_bookings|default:0 }}</span>
+                        <span class="stat-label">Completed</span>
+                    </div>
+                </div>
+                {% if profile %}
+                <div class="stat-card">
+                    <div class="stat-icon warning"><i class="fas fa-star"></i></div>
+                    <div class="stat-info">
+                        <span class="stat-value">{{ profile.average_rating }}/5</span>
+                        <span class="stat-label">Rating ({{ profile.total_ratings }} reviews)</span>
+                    </div>
+                </div>
+                {% endif %}
+            {% else %}
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-calendar"></i></div>
+                    <div class="stat-info">
+                        <span class="stat-value">{{ my_bookings|default:0 }}</span>
+                        <span class="stat-label">Total Bookings</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon accent"><i class="fas fa-clock"></i></div>
+                    <div class="stat-info">
+                        <span class="stat-value">{{ pending_bookings|default:0 }}</span>
+                        <span class="stat-label">Pending</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon success"><i class="fas fa-check-circle"></i></div>
+                    <div class="stat-info">
+                        <span class="stat-value">{{ completed_bookings|default:0 }}</span>
+                        <span class="stat-label">Completed</span>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="dashboard-actions fade-in">
+            <h3>Quick Actions</h3>
+            <div class="actions-grid">
+                {% if user.is_worker %}
+                    <a href="{% url 'bookings:booking_list' %}" class="action-card">
+                        <i class="fas fa-list"></i>
+                        <span>View Bookings</span>
+                    </a>
+                    <a href="{% url 'profiles:edit_worker_profile' %}" class="action-card">
+                        <i class="fas fa-user-edit"></i>
+                        <span>Edit Profile</span>
+                    </a>
+                {% else %}
+                    <a href="{% url 'profiles:worker_list' %}" class="action-card">
+                        <i class="fas fa-search"></i>
+                        <span>Find Workers</span>
+                    </a>
+                    <a href="{% url 'bookings:booking_list' %}" class="action-card">
+                        <i class="fas fa-list"></i>
+                        <span>My Bookings</span>
+                    </a>
+                    <a href="{% url 'profiles:edit_customer_profile' %}" class="action-card">
+                        <i class="fas fa-user-edit"></i>
+                        <span>Edit Profile</span>
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

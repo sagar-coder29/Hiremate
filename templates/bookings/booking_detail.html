@@ -1,0 +1,132 @@
+{% extends 'base.html' %}
+
+{% block title %}Booking #{{ booking.pk }} - HireMate{% endblock %}
+
+{% block content %}
+<section class="booking-detail-section">
+    <div class="container">
+        <a href="{% url 'bookings:booking_list' %}" class="back-link"><i class="fas fa-arrow-left"></i> Back to Bookings</a>
+
+        <div class="booking-detail fade-in">
+            <div class="booking-detail-header">
+                <div>
+                    <h1>Booking #{{ booking.pk }}</h1>
+                    <span class="status-badge status-badge-lg status-{{ booking.status }}">{{ booking.get_status_display }}</span>
+                </div>
+                <span class="booking-created">Created {{ booking.created_at|date:"M d, Y" }}</span>
+            </div>
+
+            <div class="booking-detail-grid">
+                <div class="booking-info-card">
+                    <h3>Booking Details</h3>
+                    <div class="info-rows">
+                        <div class="info-row">
+                            <span class="info-label"><i class="fas fa-calendar"></i> Date</span>
+                            <span class="info-value">{{ booking.preferred_date|date:"M d, Y" }}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label"><i class="fas fa-clock"></i> Time</span>
+                            <span class="info-value">{{ booking.preferred_time|time:"h:i A" }}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label"><i class="fas fa-map-marker-alt"></i> Address</span>
+                            <span class="info-value">{{ booking.address }}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label"><i class="fas fa-file-alt"></i> Description</span>
+                            <span class="info-value">{{ booking.description }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="booking-info-card">
+                    <h3>{% if user.is_customer %}Worker{% else %}Customer{% endif %} Info</h3>
+                    {% if user.is_customer %}
+                    <div class="person-info">
+                        <div class="person-avatar"><i class="fas fa-user-circle"></i></div>
+                        <div>
+                            <strong>{{ booking.worker.user.get_full_name }}</strong>
+                            <span class="service-badge">{{ booking.worker.get_service_type_display }}</span>
+                            <p>{{ booking.worker.city }}, {{ booking.worker.get_state_display }}</p>
+                            <p>₹{{ booking.worker.price_per_hour }}/hr</p>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="person-info">
+                        <div class="person-avatar"><i class="fas fa-user-circle"></i></div>
+                        <div>
+                            <strong>{{ booking.customer.get_full_name }}</strong>
+                            <p>{{ booking.customer.email }}</p>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="booking-actions">
+                {% if user.is_worker and booking.status == 'pending' %}
+                <form method="post" action="{% url 'bookings:update_status' booking.pk 'accepted' %}" style="display:inline">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-check"></i> Accept
+                    </button>
+                </form>
+                <form method="post" action="{% url 'bookings:update_status' booking.pk 'rejected' %}" style="display:inline">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-times"></i> Reject
+                    </button>
+                </form>
+                {% endif %}
+
+                {% if booking.status == 'accepted' %}
+                    {% if user.is_worker %}
+                    <form method="post" action="{% url 'bookings:update_status' booking.pk 'completed' %}" style="display:inline">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-check-double"></i> Mark as Completed
+                        </button>
+                    </form>
+                    {% endif %}
+                    {% if user.is_customer %}
+                    <form method="post" action="{% url 'bookings:update_status' booking.pk 'cancelled' %}" style="display:inline">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger">
+                            <i class="fas fa-ban"></i> Cancel Booking
+                        </button>
+                    </form>
+                    {% endif %}
+                {% endif %}
+
+                {% if user.is_customer and booking.status == 'pending' %}
+                <form method="post" action="{% url 'bookings:update_status' booking.pk 'cancelled' %}" style="display:inline">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-ban"></i> Cancel Booking
+                    </button>
+                </form>
+                {% endif %}
+
+                {% if user.is_customer and booking.status == 'completed' %}
+                    {% if not rating %}
+                    <a href="{% url 'ratings:rate_worker' booking.pk %}" class="btn btn-primary">
+                        <i class="fas fa-star"></i> Rate Worker
+                    </a>
+                    {% else %}
+                    <div class="rating-given">
+                        <span>Your Rating: </span>
+                        {% for i in "12345" %}
+                            {% if forloop.counter <= rating.score %}
+                                <i class="fas fa-star text-warning"></i>
+                            {% else %}
+                                <i class="far fa-star"></i>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,103 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}HireMate{% endblock %}</title>
+    <link rel="icon" type="image/x-icon" href="{% static 'images/favicon.ico' %}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/favicon.png' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container nav-container">
+            <a href="{% url 'home' %}" class="nav-brand">
+                <img src="{% static 'images/logo.png' %}" alt="HireMate" class="nav-logo">
+                <span>HireMate</span>
+            </a>
+            <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
+                <i class="fas fa-bars"></i>
+            </button>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="{% url 'home' %}"><i class="fas fa-home"></i> Home</a></li>
+                <li><a href="{% url 'profiles:worker_list' %}"><i class="fas fa-search"></i> Find Workers</a></li>
+                {% if user.is_authenticated %}
+                    <li><a href="{% url 'accounts:dashboard' %}"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                    <li><a href="{% url 'bookings:booking_list' %}"><i class="fas fa-calendar-check"></i> Bookings</a></li>
+                    {% if user.is_worker %}
+                        <li><a href="{% url 'profiles:edit_worker_profile' %}"><i class="fas fa-user-edit"></i> My Profile</a></li>
+                    {% else %}
+                        <li><a href="{% url 'profiles:edit_customer_profile' %}"><i class="fas fa-user-edit"></i> My Profile</a></li>
+                    {% endif %}
+                    <li>
+                        <a href="{% url 'accounts:logout' %}" class="btn btn-outline btn-sm">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </a>
+                    </li>
+                {% else %}
+                    <li><a href="{% url 'accounts:login' %}" class="btn btn-outline btn-sm">Login</a></li>
+                    <li><a href="{% url 'accounts:register_customer' %}" class="btn btn-primary btn-sm">Sign Up</a></li>
+                {% endif %}
+            </ul>
+        </div>
+    </nav>
+
+    {% if messages %}
+    <div class="container">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}" role="alert">
+            <span>{{ message }}</span>
+            <button class="alert-close" onclick="this.parentElement.remove()">&times;</button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <main class="main-content">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <h3>HireMate</h3>
+                    <p>Find trusted local service professionals for all your needs.</p>
+                </div>
+                <div class="footer-col">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="{% url 'profiles:worker_list' %}">Find Workers</a></li>
+                        <li><a href="{% url 'accounts:register_worker' %}">Join as Worker</a></li>
+                        <li><a href="{% url 'accounts:register_customer' %}">Sign Up</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Services</h4>
+                    <ul>
+                        <li><a href="{% url 'profiles:worker_list' %}?service=electrician">Electricians</a></li>
+                        <li><a href="{% url 'profiles:worker_list' %}?service=plumber">Plumbers</a></li>
+                        <li><a href="{% url 'profiles:worker_list' %}?service=carpenter">Carpenters</a></li>
+                        <li><a href="{% url 'profiles:worker_list' %}?service=painter">Painters</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Demo Login</h4>
+                    <p><strong>Customer:</strong> demo_customer / demo1234</p>
+                    <p><strong>Worker:</strong> demo_worker / demo1234</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 HireMate. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="{% static 'js/main.js' %}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

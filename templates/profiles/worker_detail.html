@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ worker.user.get_full_name }} - HireMate{% endblock %}
+
+{% block content %}
+<section class="worker-detail-section">
+    <div class="container">
+        <a href="{% url 'profiles:worker_list' %}" class="back-link"><i class="fas fa-arrow-left"></i> Back to Workers</a>
+
+        <div class="worker-profile fade-in">
+            <div class="profile-header">
+                <div class="profile-avatar">
+                    <i class="fas fa-user-circle"></i>
+                </div>
+                <div class="profile-info">
+                    <h1>{{ worker.user.get_full_name }}</h1>
+                    <span class="service-badge service-badge-lg">{{ worker.get_service_type_display }}</span>
+                    <div class="profile-rating">
+                        <div class="stars">
+                            {% for i in "12345" %}
+                                {% if forloop.counter <= worker.average_rating %}
+                                    <i class="fas fa-star"></i>
+                                {% else %}
+                                    <i class="far fa-star"></i>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                        <span>{{ worker.average_rating }}/5 ({{ worker.total_ratings }} ratings)</span>
+                    </div>
+                </div>
+                {% if user.is_authenticated and user.is_customer %}
+                <div class="profile-action">
+                    <a href="{% url 'bookings:create_booking' worker.pk %}" class="btn btn-primary btn-lg">
+                        <i class="fas fa-calendar-plus"></i> Book Now
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="profile-details">
+                <div class="detail-grid">
+                    <div class="detail-card">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <div>
+                            <strong>Location</strong>
+                            <span>{{ worker.city }}, {{ worker.get_state_display }}</span>
+                        </div>
+                    </div>
+                    <div class="detail-card">
+                        <i class="fas fa-rupee-sign"></i>
+                        <div>
+                            <strong>Price</strong>
+                            <span>₹{{ worker.price_per_hour }} per hour</span>
+                        </div>
+                    </div>
+                    <div class="detail-card">
+                        <i class="fas fa-briefcase"></i>
+                        <div>
+                            <strong>Experience</strong>
+                            <span>{{ worker.experience_years }} years</span>
+                        </div>
+                    </div>
+                    <div class="detail-card">
+                        <i class="fas fa-circle {% if worker.is_available %}text-success{% else %}text-danger{% endif %}"></i>
+                        <div>
+                            <strong>Availability</strong>
+                            <span>{% if worker.is_available %}Available{% else %}Unavailable{% endif %}</span>
+                        </div>
+                    </div>
+                    {% if worker.phone %}
+                    <div class="detail-card">
+                        <i class="fas fa-phone"></i>
+                        <div>
+                            <strong>Phone</strong>
+                            <span>{{ worker.phone }}</span>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+
+                {% if worker.bio %}
+                <div class="profile-bio">
+                    <h3>About</h3>
+                    <p>{{ worker.bio }}</p>
+                </div>
+                {% endif %}
+            </div>
+
+            {% if ratings %}
+            <div class="profile-ratings">
+                <h3>Recent Ratings</h3>
+                <div class="ratings-list">
+                    {% for rating in ratings %}
+                    <div class="rating-item">
+                        <div class="rating-stars">
+                            {% for i in "12345" %}
+                                {% if forloop.counter <= rating.score %}
+                                    <i class="fas fa-star"></i>
+                                {% else %}
+                                    <i class="far fa-star"></i>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                        <span class="rating-by">by {{ rating.customer.get_full_name }}</span>
+                        <span class="rating-date">{{ rating.created_at|date:"M d, Y" }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+{% endblock %}

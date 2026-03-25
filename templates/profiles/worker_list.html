@@ -1,0 +1,152 @@
+{% extends 'base.html' %}
+
+{% block title %}Find Workers - HireMate{% endblock %}
+
+{% block content %}
+<section class="worker-list-section">
+    <div class="container">
+        <div class="page-header fade-in">
+            <h1>Find Service Professionals</h1>
+            <p>Browse and filter workers by service, location, price, and rating</p>
+        </div>
+
+        <form method="get" action="{% url 'profiles:worker_list' %}" id="filterForm">
+            <div class="search-bar fade-in">
+                <div class="search-form">
+                    <input type="text" name="q" value="{{ current_filters.q }}" placeholder="Search by name, city, or keyword..." class="form-control search-input">
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i> Search</button>
+                </div>
+            </div>
+
+            <div class="worker-layout">
+                <aside class="filter-sidebar fade-in">
+                    <div class="filter-group">
+                        <h4><i class="fas fa-tools"></i> Service Type</h4>
+                        <select name="service" class="form-control filter-select">
+                            <option value="">All Services</option>
+                            {% for value, label in service_choices %}
+                            <option value="{{ value }}" {% if current_filters.service == value %}selected{% endif %}>{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <h4><i class="fas fa-map-marker-alt"></i> State</h4>
+                        <select name="state" class="form-control filter-select">
+                            <option value="">All States</option>
+                            {% for value, label in state_choices %}
+                            <option value="{{ value }}" {% if current_filters.state == value %}selected{% endif %}>{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <h4><i class="fas fa-city"></i> City</h4>
+                        <input type="text" name="city" value="{{ current_filters.city }}" placeholder="Enter city..." class="form-control">
+                    </div>
+
+                    <div class="filter-group">
+                        <h4><i class="fas fa-rupee-sign"></i> Price Range (₹/hr)</h4>
+                        <div class="price-range">
+                            <input type="number" name="min_price" value="{{ current_filters.min_price }}" placeholder="Min" class="form-control">
+                            <span>to</span>
+                            <input type="number" name="max_price" value="{{ current_filters.max_price }}" placeholder="Max" class="form-control">
+                        </div>
+                    </div>
+
+                    <div class="filter-group">
+                        <h4><i class="fas fa-star"></i> Minimum Rating</h4>
+                        <select name="min_rating" class="form-control filter-select">
+                            <option value="">Any Rating</option>
+                            <option value="4" {% if current_filters.min_rating == '4' %}selected{% endif %}>4+ Stars</option>
+                            <option value="3" {% if current_filters.min_rating == '3' %}selected{% endif %}>3+ Stars</option>
+                            <option value="2" {% if current_filters.min_rating == '2' %}selected{% endif %}>2+ Stars</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <h4><i class="fas fa-sort"></i> Sort By</h4>
+                        <select name="sort" class="form-control filter-select">
+                            <option value="">Default</option>
+                            <option value="price_low" {% if current_filters.sort == 'price_low' %}selected{% endif %}>Price: Low to High</option>
+                            <option value="price_high" {% if current_filters.sort == 'price_high' %}selected{% endif %}>Price: High to Low</option>
+                            <option value="experience" {% if current_filters.sort == 'experience' %}selected{% endif %}>Most Experienced</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-block">Apply Filters</button>
+                    <a href="{% url 'profiles:worker_list' %}" class="btn btn-outline btn-block">Clear All</a>
+                </aside>
+
+                <div class="worker-grid">
+                    {% if workers %}
+                        <div class="results-count">
+                            <p>Showing <strong>{{ workers|length }}</strong> worker{{ workers|length|pluralize }}</p>
+                        </div>
+                        {% for worker in workers %}
+                        <div class="worker-card fade-in">
+                            <div class="worker-card-header">
+                                <div class="worker-avatar">
+                                    <i class="fas fa-user-circle"></i>
+                                </div>
+                                <div class="worker-info">
+                                    <h3>{{ worker.user.get_full_name }}</h3>
+                                    <span class="service-badge">{{ worker.get_service_type_display }}</span>
+                                </div>
+                            </div>
+                            <div class="worker-card-body">
+                                <div class="worker-meta">
+                                    <span><i class="fas fa-map-marker-alt"></i> {{ worker.city }}, {{ worker.get_state_display }}</span>
+                                    <span><i class="fas fa-rupee-sign"></i> ₹{{ worker.price_per_hour }}/hr</span>
+                                    <span><i class="fas fa-briefcase"></i> {{ worker.experience_years }} yrs exp</span>
+                                </div>
+                                <div class="worker-rating">
+                                    <div class="stars">
+                                        {% for i in "12345" %}
+                                            {% if forloop.counter <= worker.average_rating %}
+                                                <i class="fas fa-star"></i>
+                                            {% else %}
+                                                <i class="far fa-star"></i>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                    <span class="rating-text">{{ worker.average_rating }} ({{ worker.total_ratings }})</span>
+                                </div>
+                            </div>
+                            <div class="worker-card-footer">
+                                <a href="{% url 'profiles:worker_detail' worker.pk %}" class="btn btn-primary btn-sm">View Profile</a>
+                                {% if user.is_authenticated and user.is_customer %}
+                                <a href="{% url 'bookings:create_booking' worker.pk %}" class="btn btn-outline btn-sm">Book Now</a>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="empty-state">
+                            <i class="fas fa-search"></i>
+                            <h3>No workers found</h3>
+                            <p>Try adjusting your filters or search terms.</p>
+                            <a href="{% url 'profiles:worker_list' %}" class="btn btn-primary">Clear Filters</a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </form>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var filterForm = document.getElementById('filterForm');
+    var filterSelects = document.querySelectorAll('.filter-select');
+
+    filterSelects.forEach(function(select) {
+        select.addEventListener('change', function() {
+            filterForm.submit();
+        });
+    });
+});
+</script>
+{% endblock %}

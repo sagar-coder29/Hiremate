@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+
+{% block title %}My Bookings - HireMate{% endblock %}
+
+{% block content %}
+<section class="bookings-section">
+    <div class="container">
+        <div class="page-header fade-in">
+            <h1><i class="fas fa-calendar-check"></i> My Bookings</h1>
+        </div>
+
+        <div class="status-tabs fade-in">
+            <a href="{% url 'bookings:booking_list' %}" class="tab {% if not current_status %}active{% endif %}">All</a>
+            <a href="{% url 'bookings:booking_list' %}?status=pending" class="tab {% if current_status == 'pending' %}active{% endif %}">Pending</a>
+            <a href="{% url 'bookings:booking_list' %}?status=accepted" class="tab {% if current_status == 'accepted' %}active{% endif %}">Accepted</a>
+            <a href="{% url 'bookings:booking_list' %}?status=completed" class="tab {% if current_status == 'completed' %}active{% endif %}">Completed</a>
+            <a href="{% url 'bookings:booking_list' %}?status=rejected" class="tab {% if current_status == 'rejected' %}active{% endif %}">Rejected</a>
+            <a href="{% url 'bookings:booking_list' %}?status=cancelled" class="tab {% if current_status == 'cancelled' %}active{% endif %}">Cancelled</a>
+        </div>
+
+        <div class="bookings-list">
+            {% if bookings %}
+                {% for booking in bookings %}
+                <div class="booking-card fade-in">
+                    <div class="booking-card-left">
+                        <span class="status-badge status-{{ booking.status }}">{{ booking.get_status_display }}</span>
+                        <h3>Booking #{{ booking.pk }}</h3>
+                        <p class="booking-desc">{{ booking.description|truncatewords:20 }}</p>
+                    </div>
+                    <div class="booking-card-center">
+                        {% if user.is_customer %}
+                        <div class="booking-worker">
+                            <i class="fas fa-user-circle"></i>
+                            <div>
+                                <strong>{{ booking.worker.user.get_full_name }}</strong>
+                                <span>{{ booking.worker.get_service_type_display }}</span>
+                            </div>
+                        </div>
+                        {% else %}
+                        <div class="booking-worker">
+                            <i class="fas fa-user-circle"></i>
+                            <div>
+                                <strong>{{ booking.customer.get_full_name }}</strong>
+                                <span>Customer</span>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="booking-card-right">
+                        <div class="booking-date">
+                            <i class="fas fa-calendar"></i> {{ booking.preferred_date|date:"M d, Y" }}
+                        </div>
+                        <div class="booking-time">
+                            <i class="fas fa-clock"></i> {{ booking.preferred_time|time:"h:i A" }}
+                        </div>
+                        <a href="{% url 'bookings:booking_detail' booking.pk %}" class="btn btn-primary btn-sm">View Details</a>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="empty-state fade-in">
+                    <i class="fas fa-calendar-times"></i>
+                    <h3>No bookings found</h3>
+                    <p>{% if user.is_customer %}Browse workers and create your first booking.{% else %}You haven't received any booking requests yet.{% endif %}</p>
+                    {% if user.is_customer %}
+                    <a href="{% url 'profiles:worker_list' %}" class="btn btn-primary">Find Workers</a>
+                    {% endif %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+{% endblock %}

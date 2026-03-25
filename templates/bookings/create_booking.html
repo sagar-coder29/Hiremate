@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% block title %}Book {{ worker.user.get_full_name }} - HireMate{% endblock %}
+
+{% block content %}
+<section class="booking-section">
+    <div class="container">
+        <a href="{% url 'profiles:worker_detail' worker.pk %}" class="back-link"><i class="fas fa-arrow-left"></i> Back to Profile</a>
+
+        <div class="booking-layout fade-in">
+            <div class="form-card">
+                <h2><i class="fas fa-calendar-plus"></i> Book Service</h2>
+                <p class="form-subtitle">Fill in the details for your booking request</p>
+
+                <form method="post" class="styled-form">
+                    {% csrf_token %}
+                    {% for field in form %}
+                    <div class="form-group">
+                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.errors %}
+                        <div class="field-error">{{ field.errors.0 }}</div>
+                        {% endif %}
+                        {% if field.help_text %}
+                        <small class="field-help">{{ field.help_text }}</small>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                    <button type="submit" class="btn btn-primary btn-block">Send Booking Request</button>
+                </form>
+            </div>
+
+            <div class="booking-summary">
+                <div class="summary-card">
+                    <h3>Booking Summary</h3>
+                    <div class="summary-worker">
+                        <div class="worker-avatar-sm"><i class="fas fa-user-circle"></i></div>
+                        <div>
+                            <strong>{{ worker.user.get_full_name }}</strong>
+                            <span class="service-badge">{{ worker.get_service_type_display }}</span>
+                        </div>
+                    </div>
+                    <div class="summary-details">
+                        <div class="summary-row">
+                            <span>Location</span>
+                            <span>{{ worker.city }}, {{ worker.get_state_display }}</span>
+                        </div>
+                        <div class="summary-row">
+                            <span>Rate</span>
+                            <span>₹{{ worker.price_per_hour }}/hr</span>
+                        </div>
+                        <div class="summary-row">
+                            <span>Rating</span>
+                            <span>{{ worker.average_rating }}/5 ★</span>
+                        </div>
+                        <div class="summary-row">
+                            <span>Experience</span>
+                            <span>{{ worker.experience_years }} years</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
