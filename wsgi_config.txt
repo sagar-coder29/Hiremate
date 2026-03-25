@@ -1,0 +1,21 @@
+# PythonAnywhere WSGI Configuration
+# Paste this content into the WSGI configuration file on PythonAnywhere
+
+import os
+import sys
+
+# Add your project directory to the path
+path = '/home/YOUR_USERNAME/Hiremate'
+if path not in sys.path:
+    sys.path.insert(0, path)
+
+# Activate virtual environment
+venv_path = '/home/YOUR_USERNAME/Hiremate/venv/lib/python3.11/site-packages'
+if venv_path not in sys.path:
+    sys.path.insert(0, venv_path)
+
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'hiremate.settings_production')
+
+# For Django >= 1.7
+from django.core.wsgi import get_wsgi_application
+application = get_wsgi_application()
