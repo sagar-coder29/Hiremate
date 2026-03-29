@@ -5,6 +5,21 @@
 {% block content %}
 <section class="edit-profile-section">
     <div class="container">
+        {% if role == 'worker' and profile %}
+        <div class="mb-6 fade-in">
+            <div class="card p-4">
+                <div class="flex items-center justify-between mb-2">
+                    <h3 class="text-sm font-semibold">Profile Completion</h3>
+                    <span class="text-sm font-bold text-primary">{{ profile_completion }}%</span>
+                </div>
+                <div class="progress">
+                    <div class="progress-bar" style="width: {{ profile_completion }}%"></div>
+                </div>
+                <p class="text-xs text-gray-500 mt-2">Complete all fields to get more bookings</p>
+            </div>
+        </div>
+        {% endif %}
+
         <div class="form-card fade-in">
             <h2><i class="fas fa-user-edit"></i> Edit Your Profile</h2>
             <p class="form-subtitle">Update your {{ role }} profile information</p>

@@ -9,78 +9,86 @@ from .forms import CustomerRegistrationForm, LoginForm, WorkerRegistrationForm
 
 
 def home(request):
-    return render(request, 'home.html')
+    return render(request, "home.html")
 
 
 def register_customer(request):
-    if request.method == 'POST':
+    if request.method == "POST":
         form = CustomerRegistrationForm(request.POST)
         if form.is_valid():
             user = form.save()
             CustomerProfile.objects.create(user=user)
             login(request, user)
-            return redirect('accounts:dashboard')
+            return redirect("accounts:dashboard")
     else:
         form = CustomerRegistrationForm()
-    return render(request, 'accounts/register.html', {'form': form, 'role': 'customer'})
+    return render(request, "accounts/register.html", {"form": form, "role": "customer"})
 
 
 def register_worker(request):
-    if request.method == 'POST':
+    if request.method == "POST":
         form = WorkerRegistrationForm(request.POST)
         if form.is_valid():
             user = form.save()
             WorkerProfile.objects.create(
                 user=user,
-                service_type='electrician',
-                city='',
-                state='maharashtra',
+                service_type="electrician",
+                city="",
+                state="maharashtra",
             )
             login(request, user)
-            return redirect('profiles:edit_worker_profile')
+            return redirect("profiles:edit_worker_profile")
     else:
         form = WorkerRegistrationForm()
-    return render(request, 'accounts/register.html', {'form': form, 'role': 'worker'})
+    return render(request, "accounts/register.html", {"form": form, "role": "worker"})
 
 
 class UserLoginView(LoginView):
     form_class = LoginForm
-    template_name = 'accounts/login.html'
+    template_name = "accounts/login.html"
 
 
 class UserLogoutView(LogoutView):
-    next_page = '/'
+    next_page = "/"
 
 
 @login_required
 def dashboard(request):
     user = request.user
-    context = {'user': user}
+    context = {"user": user}
 
     if user.is_worker():
         profile = WorkerProfile.objects.filter(user=user).first()
-        context['profile'] = profile
+        context["profile"] = profile
         if profile:
             from bookings.models import Booking
-            context['pending_bookings'] = Booking.objects.filter(
-                worker=profile, status='pending'
+
+            context["pending_bookings"] = Booking.objects.filter(
+                worker=profile, status="pending"
             ).count()
-            context['active_bookings'] = Booking.objects.filter(
-                worker=profile, status='accepted'
+            context["active_bookings"] = Booking.objects.filter(
+                worker=profile, status="accepted"
             ).count()
-            context['completed_bookings'] = Booking.objects.filter(
-                worker=profile, status='completed'
+            context["completed_bookings"] = Booking.objects.filter(
+                worker=profile, status="completed"
             ).count()
+            context["recent_bookings"] = Booking.objects.filter(worker=profile)[:5]
+            if profile.is_available:
+                context["availability_status"] = "available"
+            else:
+                context["availability_status"] = "unavailable"
     else:
         profile = CustomerProfile.objects.filter(user=user).first()
-        context['profile'] = profile
+        context["profile"] = profile
         from bookings.models import Booking
-        context['my_bookings'] = Booking.objects.filter(customer=user).count()
-        context['pending_bookings'] = Booking.objects.filter(
-            customer=user, status='pending'
-        ).count()
-        context['completed_bookings'] = Booking.objects.filter(
-            customer=user, status='completed'
-        ).count()
 
-    return render(request, 'accounts/dashboard.html', context)
+        context["my_bookings"] = Booking.objects.filter(customer=user).count()
+        context["pending_bookings"] = Booking.objects.filter(
+            customer=user, status="pending"
+        ).count()
+        context["completed_bookings"] = Booking.objects.filter(
+            customer=user, status="completed"
+        ).count()
+        context["recent_bookings"] = Booking.objects.filter(customer=user)[:5]
+
+    return render(request, "accounts/dashboard.html", context)

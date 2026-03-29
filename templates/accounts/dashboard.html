@@ -8,6 +8,16 @@
         <div class="dashboard-header fade-in">
             <h1>Welcome, {{ user.get_full_name|default:user.username }}!</h1>
             <span class="role-badge role-{{ user.role }}">{{ user.get_role_display }}</span>
+            {% if user.is_worker and profile %}
+            <div class="ml-auto flex items-center gap-2">
+                <span class="text-sm text-gray-500">Status:</span>
+                {% if availability_status == 'available' %}
+                <span class="badge badge-success"><span class="w-2 h-2 rounded-full bg-green-500 mr-1"></span>Available</span>
+                {% else %}
+                <span class="badge badge-secondary"><span class="w-2 h-2 rounded-full bg-gray-400 mr-1"></span>Unavailable</span>
+                {% endif %}
+            </div>
+            {% endif %}
         </div>
 
         <div class="dashboard-grid fade-in">
@@ -95,6 +105,82 @@
                 {% endif %}
             </div>
         </div>
+
+        {% if user.is_worker and profile %}
+        <div class="mt-8 fade-in">
+            <h3 class="text-xl font-bold mb-4">Your Performance</h3>
+            <div class="grid gap-4 md:grid-cols-3 mb-6">
+                <div class="card p-4">
+                    <div class="text-sm text-gray-500 mb-2">Profile Strength</div>
+                    <div class="flex items-end gap-2">
+                        <span class="text-2xl font-bold text-purple-600">{{ profile_completion|default:50 }}%</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2 mt-2">
+                        <div class="bg-purple-500 h-2 rounded-full" style="width: {{ profile_completion|default:50 }}%"></div>
+                    </div>
+                </div>
+                <div class="card p-4">
+                    <div class="text-sm text-gray-500 mb-2">Response Rate</div>
+                    <div class="flex items-end gap-2">
+                        <span class="text-2xl font-bold text-green-600">85%</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2 mt-2">
+                        <div class="bg-green-500 h-2 rounded-full" style="width: 85%"></div>
+                    </div>
+                </div>
+                <div class="card p-4">
+                    <div class="text-sm text-gray-500 mb-2">Job Success</div>
+                    <div class="flex items-end gap-2">
+                        <span class="text-2xl font-bold text-blue-600">92%</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2 mt-2">
+                        <div class="bg-blue-500 h-2 rounded-full" style="width: 92%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if recent_bookings %}
+        <div class="mt-8 fade-in">
+            <h3 class="text-xl font-bold mb-4">Recent Bookings</h3>
+            <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                {% for booking in recent_bookings %}
+                <div class="card">
+                    <div class="card-header pb-2">
+                        <div class="flex items-center justify-between">
+                            <div class="card-title text-base">
+                                {% if user.is_worker %}
+                                {{ booking.customer.get_full_name|default:booking.customer.username }}
+                                {% else %}
+                                {{ booking.worker.user.get_full_name }}
+                                {% endif %}
+                            </div>
+                            {% if booking.status == 'pending' %}
+                            <span class="badge badge-warning text-xs">Pending</span>
+                            {% elif booking.status == 'accepted' %}
+                            <span class="badge badge-info text-xs">Accepted</span>
+                            {% elif booking.status == 'rejected' %}
+                            <span class="badge badge-destructive text-xs">Rejected</span>
+                            {% elif booking.status == 'completed' %}
+                            <span class="badge badge-success text-xs">Completed</span>
+                            {% elif booking.status == 'cancelled' %}
+                            <span class="badge badge-destructive text-xs">Cancelled</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="card-content pt-0">
+                        <p class="text-sm text-gray-600 line-clamp-2">{{ booking.description|truncatewords:15 }}</p>
+                        <div class="mt-3 flex items-center justify-between text-xs text-gray-500">
+                            <span><i class="fas fa-calendar mr-1"></i>{{ booking.preferred_date }}</span>
+                            <span><i class="fas fa-clock mr-1"></i>{{ booking.preferred_time }}</span>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
     </div>
 </section>
 {% endblock %}

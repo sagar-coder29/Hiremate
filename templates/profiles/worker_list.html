@@ -90,7 +90,14 @@
                                     <i class="fas fa-user-circle"></i>
                                 </div>
                                 <div class="worker-info">
-                                    <h3>{{ worker.user.get_full_name }}</h3>
+                                    <div class="flex items-center gap-2">
+                                        <h3>{{ worker.user.get_full_name }}</h3>
+                                        {% if worker.is_available %}
+                                        <span class="badge badge-success text-[10px] py-0"><span class="w-1.5 h-1.5 rounded-full bg-green-500 mr-1 inline-block"></span>Available</span>
+                                        {% else %}
+                                        <span class="badge badge-secondary text-[10px] py-0"><span class="w-1.5 h-1.5 rounded-full bg-gray-400 mr-1 inline-block"></span>Busy</span>
+                                        {% endif %}
+                                    </div>
                                     <span class="service-badge">{{ worker.get_service_type_display }}</span>
                                 </div>
                             </div>

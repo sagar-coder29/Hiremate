@@ -11,7 +11,17 @@
             <div class="booking-detail-header">
                 <div>
                     <h1>Booking #{{ booking.pk }}</h1>
-                    <span class="status-badge status-badge-lg status-{{ booking.status }}">{{ booking.get_status_display }}</span>
+                    {% if booking.status == 'pending' %}
+                    <span class="badge badge-warning text-sm"><i class="fas fa-clock mr-1"></i>Pending</span>
+                    {% elif booking.status == 'accepted' %}
+                    <span class="badge badge-info text-sm"><i class="fas fa-check mr-1"></i>Accepted</span>
+                    {% elif booking.status == 'rejected' %}
+                    <span class="badge badge-destructive text-sm"><i class="fas fa-times mr-1"></i>Rejected</span>
+                    {% elif booking.status == 'completed' %}
+                    <span class="badge badge-success text-sm"><i class="fas fa-check-circle mr-1"></i>Completed</span>
+                    {% elif booking.status == 'cancelled' %}
+                    <span class="badge badge-destructive text-sm"><i class="fas fa-ban mr-1"></i>Cancelled</span>
+                    {% endif %}
                 </div>
                 <span class="booking-created">Created {{ booking.created_at|date:"M d, Y" }}</span>
             </div>

@@ -235,4 +235,84 @@ document.addEventListener('DOMContentLoaded', function () {
             if (form) form.submit();
         });
     });
+
+    // Chart.js initialization
+    if (typeof Chart !== 'undefined') {
+        // Service Distribution Chart
+        var serviceCtx = document.getElementById('serviceChart');
+        if (serviceCtx) {
+            new Chart(serviceCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Electrician', 'Plumber', 'Carpenter', 'Painter', 'Cleaner', 'Others'],
+                    datasets: [{
+                        data: [25, 20, 18, 15, 12, 10],
+                        backgroundColor: [
+                            '#3b82f6',
+                            '#22c55e',
+                            '#8b5cf6',
+                            '#f97316',
+                            '#06b6d4',
+                            '#6b7280'
+                        ],
+                        borderWidth: 0,
+                        hoverOffset: 10
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 15,
+                                usePointStyle: true,
+                                pointStyle: 'circle',
+                                font: { size: 11 }
+                            }
+                        }
+                    },
+                    cutout: '60%'
+                }
+            });
+        }
+
+        // Growth Chart
+        var growthCtx = document.getElementById('growthChart');
+        if (growthCtx) {
+            new Chart(growthCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                    datasets: [{
+                        label: 'Bookings',
+                        data: [120, 190, 280, 350, 420, 520],
+                        borderColor: '#3b82f6',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        fill: true,
+                        tension: 0.4,
+                        pointBackgroundColor: '#3b82f6',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        pointRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: 'rgba(0, 0, 0, 0.05)' }
+                        },
+                        x: { grid: { display: false } }
+                    }
+                }
+            });
+        }
+    }
 });

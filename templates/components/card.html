@@ -1,0 +1,17 @@
+{% comment %} 
+Usage: 
+{% include "components/card.html" with title="Card Title" description="Description" %}
+  Card content here
+{% endinclude %}
+{% endcomment %}
+<div class="card">
+    {% if title or description %}
+    <div class="card-header">
+        {% if title %}<div class="card-title">{{ title }}</div>{% endif %}
+        {% if description %}<div class="card-description">{{ description }}</div>{% endif %}
+    </div>
+    {% endif %}
+    <div class="card-content">
+        {{ slot }}
+    </div>
+</div>

@@ -170,6 +170,109 @@
     </div>
 </section>
 
+<section class="stats-section">
+    <div class="container">
+        <h2 class="section-title fade-in">Why Choose HireMate?</h2>
+        <p class="section-subtitle fade-in">Trusted by thousands across India</p>
+        
+        <div class="stats-grid">
+            <div class="stats-card-horizontal fade-in">
+                <div class="stats-icon-chart bg-blue-500">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="stats-content">
+                    <span class="stats-value" data-count="20000">2000</span>
+                    <span class="stats-label">Happy Customers</span>
+                </div>
+            </div>
+            <div class="stats-card-horizontal fade-in">
+                <div class="stats-icon-chart bg-green-500">
+                    <i class="fas fa-user-check"></i>
+                </div>
+                <div class="stats-content">
+                    <span class="stats-value" data-count="500">200</span>
+                    <span class="stats-label">Verified Workers</span>
+                </div>
+            </div>
+            <div class="stats-card-horizontal fade-in">
+                <div class="stats-icon-chart bg-purple-500">
+                    <i class="fas fa-calendar-check"></i>
+                </div>
+                <div class="stats-content">
+                    <span class="stats-value" data-count="8500">300</span>
+                    <span class="stats-label">Jobs Completed</span>
+                </div>
+            </div>
+            <div class="stats-card-horizontal fade-in">
+                <div class="stats-icon-chart bg-orange-500">
+                    <i class="fas fa-star"></i>
+                </div>
+                <div class="stats-content">
+                    <span class="stats-value" data-count="98" data-decimal="true">98</span>
+                    <span class="stats-label">% Satisfaction Rate</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Section -->
+        <div class="charts-grid mt-12">
+            <div class="chart-card fade-in">
+                <div class="chart-header">
+                    <h3>Service Distribution</h3>
+                    <span class="chart-badge">Live</span>
+                </div>
+                <div class="chart-body" style="height: 180px;">
+                    <canvas id="serviceChart"></canvas>
+                </div>
+            </div>
+            <div class="chart-card fade-in">
+                <div class="chart-header">
+                    <h3>Monthly Bookings</h3>
+                    <span class="chart-badge growth">YoY Growth</span>
+                </div>
+                <div class="chart-body" style="height: 200px;">
+                    <canvas id="monthlyBookingsChart"></canvas>
+                </div>
+                <div class="chart-stats">
+                    <div class="chart-stat">
+                        <span class="chart-stat-value" id="totalBookingsThisYear">520</span>
+                        <span class="chart-stat-label">This Year</span>
+                    </div>
+                    <div class="chart-stat">
+                        <span class="chart-stat-value" id="yoyGrowth">+35%</span>
+                        <span class="chart-stat-label">vs Last Year</span>
+                    </div>
+                </div>
+            </div>
+            <div class="chart-card fade-in">
+                <div class="chart-header">
+                    <h3>Customer Satisfaction</h3>
+                    <span class="chart-badge success">Top Rated</span>
+                </div>
+                <div class="satisfaction-chart" style="padding-top: 10px;">
+                    <div class="satisfaction-ring">
+                        <svg viewBox="0 0 100 100">
+                            <circle cx="50" cy="50" r="45" fill="none" stroke="#e5e7eb" stroke-width="8"/>
+                            <circle cx="50" cy="50" r="45" fill="none" stroke="#22c55e" stroke-width="8" 
+                                stroke-dasharray="283" stroke-dashoffset="20" stroke-linecap="round"
+                                transform="rotate(-90 50 50)"/>
+                        </svg>
+                        <div class="satisfaction-value">
+                            <span class="text-3xl font-bold">98%</span>
+                            <span class="text-sm text-gray-500">Satisfied</span>
+                        </div>
+                    </div>
+                    <div class="satisfaction-legend">
+                        <div class="legend-item"><span class="legend-dot bg-green-500"></span> Very Happy (75%)</div>
+                        <div class="legend-item"><span class="legend-dot bg-blue-500"></span> Happy (23%)</div>
+                        <div class="legend-item"><span class="legend-dot bg-gray-300"></span> Neutral (2%)</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
 <section class="cta-section">
     <div class="container">
         <div class="cta-content fade-in">
@@ -182,4 +285,82 @@
         </div>
     </div>
 </section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const ctx = document.getElementById('monthlyBookingsChart').getContext('2d');
+    
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const lastYearData = [180, 220, 280, 350, 420, 480, 520, 590, 640, 710, 780, 850];
+    const thisYearData = [240, 310, 380, 460, 540, 620, 680, 750, 820, 900, 980, 1050];
+    
+    const totalThisYear = thisYearData.reduce((a, b) => a + b, 0);
+    const totalLastYear = lastYearData.reduce((a, b) => a + b, 0);
+    const growth = ((totalThisYear - totalLastYear) / totalLastYear * 100).toFixed(1);
+    
+    document.getElementById('totalBookingsThisYear').textContent = totalThisYear;
+    document.getElementById('yoyGrowth').textContent = '+' + growth + '%';
+    
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: months,
+            datasets: [
+                {
+                    label: 'Last Year',
+                    data: lastYearData,
+                    backgroundColor: 'rgba(148, 163, 184, 0.6)',
+                    borderColor: 'rgba(148, 163, 184, 1)',
+                    borderWidth: 1,
+                    borderRadius: 4,
+                },
+                {
+                    label: 'This Year',
+                    data: thisYearData,
+                    backgroundColor: 'rgba(34, 197, 94, 0.7)',
+                    borderColor: 'rgba(34, 197, 94, 1)',
+                    borderWidth: 1,
+                    borderRadius: 4,
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        usePointStyle: true,
+                        padding: 15,
+                        font: { size: 11 }
+                    }
+                },
+                tooltip: {
+                    mode: 'index',
+                    intersect: false,
+                }
+            },
+            scales: {
+                x: {
+                    grid: { display: false },
+                    ticks: { font: { size: 10 } }
+                },
+                y: {
+                    beginAtZero: true,
+                    grid: { color: 'rgba(0,0,0,0.05)' },
+                    ticks: { font: { size: 10 } }
+                }
+            },
+            interaction: {
+                mode: 'nearest',
+                axis: 'x',
+                intersect: false
+            }
+        }
+    });
+});
+</script>
 {% endblock %}
