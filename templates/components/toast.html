@@ -1,0 +1,21 @@
+{% comment %}
+Toast Notification Component
+Usage: {% include "components/toast.html" with message="Success!" type="success" %}
+{% endcomment %}
+<div class="toast toast-{{ type|default:'info' }}" role="alert" aria-live="polite">
+    <div class="toast-icon">
+        {% if type == 'success' %}
+        <i class="fas fa-check-circle"></i>
+        {% elif type == 'error' %}
+        <i class="fas fa-exclamation-circle"></i>
+        {% elif type == 'warning' %}
+        <i class="fas fa-exclamation-triangle"></i>
+        {% else %}
+        <i class="fas fa-info-circle"></i>
+        {% endif %}
+    </div>
+    <span class="toast-message">{{ message }}</span>
+    <button class="toast-close" onclick="this.parentElement.remove()" aria-label="Close notification">
+        <i class="fas fa-times"></i>
+    </button>
+</div>

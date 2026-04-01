@@ -15,12 +15,25 @@ A modern, visually stunning job marketplace platform where customers can find an
 - **Rating & Reviews** - Rate workers after completed services (1-5 stars)
 - **User Profiles** - Separate profiles for customers and workers
 
-### UI/UX Features
-- **Responsive Design** - Works seamlessly on all devices
-- **3D Animated UI** - Immersive hero section with floating shapes, cubes, and particles
-- **Real-time Stats** - Animated counters and live statistics dashboard
-- **Interactive Charts** - Chart.js powered bar charts for monthly bookings with YoY comparison
-- **Modern Components** - Shadcn-style UI components with Tailwind CSS
+### Booking Enhancements
+- **Address Auto-Fill** - Save multiple addresses and auto-fill from saved locations
+- **Multiple Time Slots** - Select up to 3 preferred time slots for booking
+- **Service Sub-Categories** - Choose specific service types (Installation, Repair, Maintenance, etc.)
+- **Click-to-Call** - Direct call buttons for workers and customers on booking details
+- **Enhanced Description** - Character-limited description with live counter
+
+### UI/UX Features ✨
+- **Modern Glassmorphism Design** - Frosted glass effects with backdrop blur
+- **3D Animated Background** - Floating glassmorphic blobs and glowing orbs
+- **Gradient Mesh Animation** - Dynamic color-shifting background
+- **Interactive Particle System** - Floating particles with twinkling effect
+- **Parallax Mouse Effect** - Elements respond to cursor movement
+- **Purple + Green Color Scheme** - Trust purple with conversion green CTAs
+- **Smooth Hover Animations** - 200-300ms transitions for all interactive elements
+- **Verified Badges** - Trust-building verification icons on worker profiles
+- **Trust Section** - Dedicated section highlighting platform safety features
+- **Responsive Design** - Works seamlessly on all devices (375px to 1440px+)
+- **Accessible** - WCAG compliant color contrast and keyboard navigation
 
 ### Services Available
 - Electrician
@@ -31,6 +44,32 @@ A modern, visually stunning job marketplace platform where customers can find an
 - Mechanic
 - Gardener
 - AC Repair
+
+---
+
+## 🎨 Design System
+
+### Color Palette
+| Role | Color | Hex |
+|------|-------|-----|
+| Primary | Purple | `#7C3AED` |
+| Primary Dark | Deep Purple | `#6D28D9` |
+| Primary Light | Light Purple | `#A78BFA` |
+| CTA (Call-to-Action) | Green | `#22C55E` |
+| CTA Dark | Deep Green | `#16A34A` |
+| Background | Off White | `#F8FAFC` |
+| Text | Dark Slate | `#1E293B` |
+
+### Typography
+- **Font Family:** Inter (Google Fonts)
+- **Weights:** 300, 400, 500, 600, 700
+
+### UI Components
+- Glassmorphic cards with `backdrop-filter: blur(20px)`
+- Gradient backgrounds with smooth animations
+- Floating orbs with glow effects
+- Animated particle system
+- Trust badges with verified icons
 
 ---
 
@@ -46,33 +85,28 @@ The home page features an analytics section with:
 
 ## 📸 Screenshots
 
-> **Note:** Screenshots will be added after deployment. To add your own screenshots:
-> 1. Take screenshots of each page
-> 2. Save them as PNG files in `static/images/screenshots/`
-> 3. Update the image paths below
+### Home Page - Hero Section
+![Home Page Hero](static/images/screenshots/home-hero.png)
+*Modern 3D animated hero with glassmorphism background, floating orbs, and gradient mesh*
 
-### Home Page
-![Home Page](https://via.placeholder.com/1200x600/2563eb/ffffff?text=HireMate+Home+Page)
-*Modern hero section with 3D animated background and analytics charts*
+### Services Section
+![Services](static/images/screenshots/services.png)
+*Service cards with smooth hover animations and cursor-pointer feedback*
 
-### Login Page
-![Login](https://via.placeholder.com/800x500/1d4ed8/ffffff?text=Login+Page)
-*Clean and intuitive authentication interface with social login*
+### Trust Section
+![Trust](static/images/screenshots/trust-section.png)
+*Trust-building section highlighting platform safety features*
 
-### Worker List
-![Workers](https://via.placeholder.com/1200x600/2563eb/ffffff?text=Worker+Listing+Page)
-*Browse and filter service providers by service type, location, price, and rating*
+### Analytics Dashboard
+![Analytics](static/images/screenshots/analytics.png)
+*Interactive Chart.js powered analytics with year-over-year comparison*
 
-### Worker Profile
-![Profile](https://via.placeholder.com/800x600/1d4ed8/ffffff?text=Worker+Profile)
-*Detailed worker profiles with ratings, services, and availability*
-
-### Dashboard
-![Dashboard](https://via.placeholder.com/1200x600/2563eb/ffffff?text=User+Dashboard)
-*Personalized dashboard with booking management and status badges*
+### Worker Listing
+![Workers](static/images/screenshots/workers.png)
+*Browse and filter service providers with verified badges*
 
 ### Booking Flow
-![Booking](https://via.placeholder.com/800x500/1d4ed8/ffffff?text=Booking+Page)
+![Booking](static/images/screenshots/booking.png)
 *Simple and intuitive booking process with date/time picker*
 
 ---
@@ -90,12 +124,7 @@ The home page features an analytics section with:
 - **Chart.js** - Interactive charts and data visualization
 - **Font Awesome 6** - Icon library
 - **Google Fonts** - Inter font family
-
-### Future Stack (Next.js App)
-- **Framework:** Next.js 16
-- **UI Components:** shadcn/ui style components
-- **Icons:** Remix Icon
-- **State:** React hooks
+- **Custom CSS Animations** - 3D effects, glassmorphism, particles
 
 ### Hosting
 - **PythonAnywhere** - Primary hosting
@@ -140,74 +169,11 @@ python manage.py runserver
 
 Open http://localhost:8000 in your browser.
 
-### Next.js App Setup (Optional)
-
-```bash
-cd next-app
-npm install
-npm run dev
-```
-
 ---
 
 ## 🌐 Live Demo
 
-**Live URL:** https://your-username.pythonanywhere.com
-
-*(Replace with your deployed URL)*
-
----
-
-## 📁 Project Structure
-
-```
-Hiremate/
-├── accounts/              # User authentication, registration & profiles
-│   ├── models.py          # Custom user models
-│   ├── views.py           # Auth views and dashboard
-│   ├── urls.py            # Auth URLs
-│   └── pipeline.py        # Social auth pipeline
-├── bookings/              # Booking management system
-│   ├── models.py          # Booking model
-│   ├── views.py           # Booking CRUD views
-│   └── urls.py            # Booking URLs
-├── profiles/              # Worker & customer profiles
-│   ├── models.py          # Profile models
-│   ├── views.py           # Profile views
-│   └── urls.py            # Profile URLs
-├── ratings/               # Ratings and reviews system
-│   ├── models.py          # Rating model
-│   └── views.py           # Rating views
-├── hiremate/              # Django project settings
-│   ├── settings.py        # Project configuration
-│   ├── urls.py            # Root URL configuration
-│   └── wsgi.py            # WSGI application
-├── next-app/              # Next.js application (future frontend)
-│   ├── app/               # Next.js app router
-│   ├── components/        # React components
-│   ├── lib/               # Utilities
-│   └── hooks/             # Custom React hooks
-├── static/                # Static assets
-│   ├── css/
-│   │   ├── style.css      # Main stylesheet
-│   │   ├── components.css # UI components
-│   │   └── shadcn.css     # Shadcn-style components
-│   ├── js/
-│   │   └── main.js        # JavaScript functionality
-│   └── images/            # Images and logos
-├── templates/             # HTML templates
-│   ├── base.html          # Base template
-│   ├── home.html          # Home page with analytics
-│   ├── accounts/          # Auth templates
-│   ├── bookings/          # Booking templates
-│   ├── profiles/          # Profile templates
-│   ├── ratings/           # Rating templates
-│   └── components/        # Reusable components
-├── manage.py
-├── requirements.txt
-├── tailwind.config.js     # Tailwind CSS configuration
-└── README.md
-```
+**Live URL:** https://sagar-coder29.pythonanywhere.com
 
 ---
 
@@ -250,14 +216,6 @@ Hiremate/
 5. Configure web app in PythonAnywhere dashboard
 6. Set static files path to `/home/username/Hiremate/static`
 
-### Railway
-
-```bash
-railway init
-railway up
-railway run python manage.py migrate
-```
-
 ---
 
 ## 🎨 Customization
@@ -266,36 +224,38 @@ railway run python manage.py migrate
 Edit `static/css/style.css` CSS variables:
 ```css
 :root {
-    --primary: #2563eb;
-    --primary-dark: #1d4ed8;
-    --primary-light: #60a5fa;
-    /* ... */
+    --primary: #7C3AED;
+    --primary-dark: #6D28D9;
+    --primary-light: #A78BFA;
+    --cta: #22C55E;
+    --cta-dark: #16A34A;
 }
 ```
 
-### Services
-Add new services in `profiles/models.py`:
-```python
-SERVICE_CHOICES = [
-    ('electrician', 'Electrician'),
-    ('plumber', 'Plumber'),
-    # Add new services here
-]
-```
-
-### Charts
-Modify chart data in `templates/home.html`:
-```javascript
-const lastYearData = [180, 220, 280, ...];
-const thisYearData = [240, 310, 380, ...];
-```
-
-### Logo
-Replace `static/images/logo.png` with your custom logo.
+### Adding Screenshots
+1. Take screenshots of each page (recommended size: 1200x600px)
+2. Save them as PNG files in `static/images/screenshots/`
+3. Update the image paths in this README
 
 ---
 
 ## 📝 Recent Updates
+
+### v3.0 (April 2026)
+- **UI/UX Pro Max Design System** - Professional glassmorphism design
+- **3D Animated Background** - Floating glassmorphic blobs, orbs, and particles
+- **New Color Scheme** - Purple primary with green CTAs
+- **Trust Section** - New section highlighting platform safety
+- **Verified Badges** - Visual trust indicators on worker profiles
+- **Smooth Animations** - Optimized 200-300ms transitions
+- **Parallax Effects** - Interactive mouse-responsive elements
+
+### v2.1 (March 2026)
+- Added **Address Auto-Fill** system with saved addresses
+- Implemented **Multiple Time Slot** selection (up to 3 preferred times)
+- Added **Service Sub-Categories** based on worker service type
+- Integrated **Click-to-Call** functionality for workers and customers
+- Enhanced **Description Field** with character counter
 
 ### v2.0 (March 2026)
 - Added **Chart.js** for data visualization
@@ -304,15 +264,13 @@ Replace `static/images/logo.png` with your custom logo.
 - Created **Customer Satisfaction** circular progress indicator
 - Added **Live Statistics** with animated counters
 - Integrated **Google OAuth** social authentication
-- Added **Shadcn-style UI components**
-- Set up **Next.js** app structure for future frontend
 
 ### v1.0 (Initial Release)
 - User authentication system
 - Worker listing and profiles
 - Booking management
 - Rating system
-- Responsive design with 3D animations
+- Responsive design with animations
 
 ---
 
@@ -333,9 +291,9 @@ This project is open source and available under the MIT License.
 
 - [Font Awesome](https://fontawesome.com) for icons
 - [Google Fonts](https://fonts.google.com) for typography
-- [Unsplash](https://unsplash.com) for placeholder images
 - [Chart.js](https://www.chartjs.org/) for data visualization
 - [Tailwind CSS](https://tailwindcss.com) for styling
+- [UI/UX Pro Max](https://uupm.cc/) for design system inspiration
 - [shadcn/ui](https://ui.shadcn.com/) for UI inspiration
 
 ---

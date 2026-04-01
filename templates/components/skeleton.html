@@ -1,0 +1,29 @@
+{% comment %}
+Loading Skeleton Components
+Usage: {% include "components/skeleton.html" with type="worker_card" count=6 %}
+{% endcomment %}
+
+{% if type == "worker_card" %}
+<div class="worker-card skeleton-card" aria-busy="true" aria-label="Loading worker information">
+    <div class="worker-card-header">
+        <div class="skeleton skeleton-avatar"></div>
+        <div class="worker-info">
+            <div class="skeleton skeleton-title"></div>
+            <div class="skeleton skeleton-badge"></div>
+        </div>
+    </div>
+    <div class="worker-card-body">
+        <div class="skeleton skeleton-text"></div>
+        <div class="skeleton skeleton-text short"></div>
+        <div class="skeleton skeleton-stars"></div>
+    </div>
+    <div class="worker-card-footer">
+        <div class="skeleton skeleton-button"></div>
+        <div class="skeleton skeleton-button outline"></div>
+    </div>
+</div>
+{% elif type == "text" %}
+<div class="skeleton skeleton-text{% if short %} short{% endif %}"></div>
+{% elif type == "avatar" %}
+<div class="skeleton skeleton-avatar"></div>
+{% endif %}

@@ -5,74 +5,34 @@
 
 {% block content %}
 <section class="hero">
-    <!-- 3D Animated Background -->
+    <!-- Modern 3D Background Effects -->
     <div class="hero-bg-3d">
-        <div class="floating-shape shape-1"></div>
-        <div class="floating-shape shape-2"></div>
-        <div class="floating-shape shape-3"></div>
-        <div class="floating-shape shape-4"></div>
-        <div class="floating-shape shape-5"></div>
+        <!-- Gradient Mesh Background -->
+        <div class="gradient-mesh"></div>
+        
+        <!-- Floating Glassmorphic Blobs -->
+        <div class="glass-blob blob-1"></div>
+        <div class="glass-blob blob-2"></div>
+        <div class="glass-blob blob-3"></div>
+        
+        <!-- Floating Orbs -->
+        <div class="floating-orb orb-1"></div>
+        <div class="floating-orb orb-2"></div>
+        <div class="floating-orb orb-3"></div>
+        
+        <!-- Particle System -->
+        <div class="particles" id="particles"></div>
+        
+        <!-- Grid Pattern -->
+        <div class="grid-pattern"></div>
     </div>
-
-    <!-- 3D Geometric Objects -->
-    <div class="hero-3d-object cube">
-        <div class="face front"></div>
-        <div class="face back"></div>
-        <div class="face right"></div>
-        <div class="face left"></div>
-        <div class="face top"></div>
-        <div class="face bottom"></div>
-    </div>
-    <div class="hero-3d-object cube cube-2">
-        <div class="face front"></div>
-        <div class="face back"></div>
-        <div class="face right"></div>
-        <div class="face left"></div>
-        <div class="face top"></div>
-        <div class="face bottom"></div>
-    </div>
-    <div class="hero-3d-object cube cube-3">
-        <div class="face front"></div>
-        <div class="face back"></div>
-        <div class="face right"></div>
-        <div class="face left"></div>
-        <div class="face top"></div>
-        <div class="face bottom"></div>
-    </div>
-
-    <!-- Floating Particles -->
-    <div class="hero-particles">
-        <div class="particle"></div>
-        <div class="particle"></div>
-        <div class="particle"></div>
-        <div class="particle"></div>
-        <div class="particle"></div>
-        <div class="particle"></div>
-        <div class="particle"></div>
-        <div class="particle"></div>
-        <div class="particle"></div>
-        <div class="particle"></div>
-        <div class="particle"></div>
-        <div class="particle"></div>
-    </div>
-
-    <!-- Orbit Rings -->
-    <div class="orbit-ring orbit-ring-1">
-        <div class="orbit-dot"></div>
-    </div>
-    <div class="orbit-ring orbit-ring-2">
-        <div class="orbit-dot"></div>
-    </div>
-
-    <!-- Grid Overlay -->
-    <div class="hero-grid"></div>
 
     <div class="container">
         <div class="hero-content">
             <h1 class="hero-title">Find Trusted <span class="text-gradient">Service Professionals</span> Near You</h1>
             <p class="hero-subtitle">Book electricians, plumbers, carpenters, and more — all verified and rated by your community.</p>
             <div class="hero-actions">
-                <a href="{% url 'profiles:worker_list' %}" class="btn btn-primary btn-lg">
+                <a href="{% url 'profiles:worker_list' %}" class="btn btn-cta btn-lg">
                     <i class="fas fa-search"></i> Find Workers
                 </a>
                 <a href="{% url 'accounts:register_worker' %}" class="btn btn-outline btn-lg">
@@ -170,6 +130,43 @@
     </div>
 </section>
 
+<section class="trust-section">
+    <div class="container">
+        <h2 class="section-title fade-in">Why Trust HireMate?</h2>
+        <p class="section-subtitle fade-in">Your safety and satisfaction are our top priorities</p>
+        <div class="trust-grid">
+            <div class="trust-card fade-in fade-in-delay-1">
+                <div class="trust-icon">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <h3>Verified Workers</h3>
+                <p>All workers undergo background verification before joining our platform.</p>
+            </div>
+            <div class="trust-card fade-in fade-in-delay-2">
+                <div class="trust-icon">
+                    <i class="fas fa-star"></i>
+                </div>
+                <h3>Real Reviews</h3>
+                <p>Read genuine reviews from real customers before booking.</p>
+            </div>
+            <div class="trust-card fade-in fade-in-delay-3">
+                <div class="trust-icon">
+                    <i class="fas fa-lock"></i>
+                </div>
+                <h3>Secure Payments</h3>
+                <p>Your payments are protected with industry-standard encryption.</p>
+            </div>
+            <div class="trust-card fade-in fade-in-delay-4">
+                <div class="trust-icon">
+                    <i class="fas fa-headset"></i>
+                </div>
+                <h3>24/7 Support</h3>
+                <p>Our support team is always ready to help you anytime.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
 <section class="stats-section">
     <div class="container">
         <h2 class="section-title fade-in">Why Choose HireMate?</h2>
@@ -177,7 +174,7 @@
         
         <div class="stats-grid">
             <div class="stats-card-horizontal fade-in">
-                <div class="stats-icon-chart bg-blue-500">
+                <div class="stats-icon-chart" style="background: linear-gradient(135deg, var(--primary), var(--primary-light));">
                     <i class="fas fa-users"></i>
                 </div>
                 <div class="stats-content">
@@ -186,7 +183,7 @@
                 </div>
             </div>
             <div class="stats-card-horizontal fade-in">
-                <div class="stats-icon-chart bg-green-500">
+                <div class="stats-icon-chart" style="background: linear-gradient(135deg, var(--cta), #4ADE80);">
                     <i class="fas fa-user-check"></i>
                 </div>
                 <div class="stats-content">
@@ -195,7 +192,7 @@
                 </div>
             </div>
             <div class="stats-card-horizontal fade-in">
-                <div class="stats-icon-chart bg-purple-500">
+                <div class="stats-icon-chart" style="background: linear-gradient(135deg, var(--secondary), var(--primary-lighter));">
                     <i class="fas fa-calendar-check"></i>
                 </div>
                 <div class="stats-content">
@@ -204,7 +201,7 @@
                 </div>
             </div>
             <div class="stats-card-horizontal fade-in">
-                <div class="stats-icon-chart bg-orange-500">
+                <div class="stats-icon-chart" style="background: linear-gradient(135deg, var(--warning), #FBBF24);">
                     <i class="fas fa-star"></i>
                 </div>
                 <div class="stats-content">
@@ -279,7 +276,7 @@
             <h2>Ready to Get Started?</h2>
             <p>Join HireMate today and connect with skilled professionals in your area.</p>
             <div class="cta-actions">
-                <a href="{% url 'accounts:register_customer' %}" class="btn btn-primary btn-lg">Sign Up as Customer</a>
+                <a href="{% url 'accounts:register_customer' %}" class="btn btn-cta btn-lg">Sign Up as Customer</a>
                 <a href="{% url 'accounts:register_worker' %}" class="btn btn-outline btn-lg">Register as Worker</a>
             </div>
         </div>
@@ -289,8 +286,56 @@
 
 {% block extra_js %}
 <script>
+// Create floating particles dynamically
 document.addEventListener('DOMContentLoaded', function() {
-    const ctx = document.getElementById('monthlyBookingsChart').getContext('2d');
+    const particlesContainer = document.getElementById('particles');
+    if (particlesContainer) {
+        const particleCount = 30;
+        
+        for (let i = 0; i < particleCount; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'dynamic-particle';
+            particle.style.cssText = `
+                position: absolute;
+                width: ${Math.random() * 4 + 2}px;
+                height: ${Math.random() * 4 + 2}px;
+                background: rgba(255, 255, 255, ${Math.random() * 0.5 + 0.2});
+                border-radius: 50%;
+                left: ${Math.random() * 100}%;
+                top: ${Math.random() * 100}%;
+                animation: particleFloat ${Math.random() * 10 + 10}s ease-in-out infinite;
+                animation-delay: ${Math.random() * 5}s;
+                pointer-events: none;
+            `;
+            particlesContainer.appendChild(particle);
+        }
+    }
+    
+    // Parallax effect on mouse move
+    const hero = document.querySelector('.hero');
+    const blobs = document.querySelectorAll('.glass-blob');
+    const orbs = document.querySelectorAll('.floating-orb');
+    
+    if (hero) {
+        hero.addEventListener('mousemove', function(e) {
+            const rect = hero.getBoundingClientRect();
+            const x = (e.clientX - rect.left) / rect.width;
+            const y = (e.clientY - rect.top) / rect.height;
+            
+            blobs.forEach((blob, i) => {
+                const speed = (i + 1) * 15;
+                blob.style.transform = `translate(${x * speed}px, ${y * speed}px)`;
+            });
+            
+            orbs.forEach((orb, i) => {
+                const speed = (i + 1) * 10;
+                orb.style.transform = `translate(${x * speed}px, ${y * speed}px)`;
+            });
+        });
+    }
+    
+    // Monthly Bookings Chart
+    const chartCtx = document.getElementById('monthlyBookingsChart').getContext('2d');
     
     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
     const lastYearData = [180, 220, 280, 350, 420, 480, 520, 590, 640, 710, 780, 850];
@@ -303,7 +348,7 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('totalBookingsThisYear').textContent = totalThisYear;
     document.getElementById('yoyGrowth').textContent = '+' + growth + '%';
     
-    new Chart(ctx, {
+    new Chart(chartCtx, {
         type: 'bar',
         data: {
             labels: months,
@@ -319,8 +364,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 {
                     label: 'This Year',
                     data: thisYearData,
-                    backgroundColor: 'rgba(34, 197, 94, 0.7)',
-                    borderColor: 'rgba(34, 197, 94, 1)',
+                    backgroundColor: 'rgba(124, 58, 237, 0.7)',
+                    borderColor: 'rgba(124, 58, 237, 1)',
                     borderWidth: 1,
                     borderRadius: 4,
                 }
@@ -363,4 +408,24 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
+<style>
+@keyframes particleFloat {
+    0%, 100% { 
+        transform: translateY(0) translateX(0) scale(1);
+        opacity: 0.3;
+    }
+    25% { 
+        transform: translateY(-30px) translateX(10px) scale(1.2);
+        opacity: 0.8;
+    }
+    50% { 
+        transform: translateY(-15px) translateX(-15px) scale(0.8);
+        opacity: 0.5;
+    }
+    75% { 
+        transform: translateY(-40px) translateX(5px) scale(1.1);
+        opacity: 0.9;
+    }
+}
+</style>
 {% endblock %}

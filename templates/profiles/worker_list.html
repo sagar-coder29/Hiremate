@@ -78,56 +78,56 @@
                     <a href="{% url 'profiles:worker_list' %}" class="btn btn-outline btn-block">Clear All</a>
                 </aside>
 
-                <div class="worker-grid">
+                <div class="worker-grid" id="workerGrid">
                     {% if workers %}
                         <div class="results-count">
-                            <p>Showing <strong>{{ workers|length }}</strong> worker{{ workers|length|pluralize }}</p>
+                            <p>Showing <strong>{{ workers.start_index }}–{{ workers.end_index }}</strong> of <strong>{{ paginator.count }}</strong> workers</p>
                         </div>
                         {% for worker in workers %}
-                        <div class="worker-card fade-in">
-                            <div class="worker-card-header">
-                                <div class="worker-avatar">
-                                    <i class="fas fa-user-circle"></i>
-                                </div>
-                                <div class="worker-info">
-                                    <div class="flex items-center gap-2">
-                                        <h3>{{ worker.user.get_full_name }}</h3>
-                                        {% if worker.is_available %}
-                                        <span class="badge badge-success text-[10px] py-0"><span class="w-1.5 h-1.5 rounded-full bg-green-500 mr-1 inline-block"></span>Available</span>
-                                        {% else %}
-                                        <span class="badge badge-secondary text-[10px] py-0"><span class="w-1.5 h-1.5 rounded-full bg-gray-400 mr-1 inline-block"></span>Busy</span>
-                                        {% endif %}
-                                    </div>
-                                    <span class="service-badge">{{ worker.get_service_type_display }}</span>
-                                </div>
-                            </div>
-                            <div class="worker-card-body">
-                                <div class="worker-meta">
-                                    <span><i class="fas fa-map-marker-alt"></i> {{ worker.city }}, {{ worker.get_state_display }}</span>
-                                    <span><i class="fas fa-rupee-sign"></i> ₹{{ worker.price_per_hour }}/hr</span>
-                                    <span><i class="fas fa-briefcase"></i> {{ worker.experience_years }} yrs exp</span>
-                                </div>
-                                <div class="worker-rating">
-                                    <div class="stars">
-                                        {% for i in "12345" %}
-                                            {% if forloop.counter <= worker.average_rating %}
-                                                <i class="fas fa-star"></i>
-                                            {% else %}
-                                                <i class="far fa-star"></i>
-                                            {% endif %}
-                                        {% endfor %}
-                                    </div>
-                                    <span class="rating-text">{{ worker.average_rating }} ({{ worker.total_ratings }})</span>
-                                </div>
-                            </div>
-                            <div class="worker-card-footer">
-                                <a href="{% url 'profiles:worker_detail' worker.pk %}" class="btn btn-primary btn-sm">View Profile</a>
-                                {% if user.is_authenticated and user.is_customer %}
-                                <a href="{% url 'bookings:create_booking' worker.pk %}" class="btn btn-outline btn-sm">Book Now</a>
-                                {% endif %}
-                            </div>
-                        </div>
+                        {% include "components/worker_card.html" with worker=worker %}
                         {% endfor %}
+
+                        {% if workers.has_other_pages %}
+                        <nav class="pagination-nav" aria-label="Worker list pagination">
+                            <ul class="pagination">
+                                {% if workers.has_previous %}
+                                <li class="pagination-item">
+                                    <a href="?page=1{% for key, value in current_filters.items %}{% if value and key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" class="pagination-link" aria-label="First page">
+                                        <i class="fas fa-angle-double-left"></i>
+                                    </a>
+                                </li>
+                                <li class="pagination-item">
+                                    <a href="?page={{ workers.previous_page_number }}{% for key, value in current_filters.items %}{% if value and key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" class="pagination-link" aria-label="Previous page">
+                                        <i class="fas fa-angle-left"></i>
+                                    </a>
+                                </li>
+                                {% endif %}
+
+                                {% for num in workers.paginator.page_range %}
+                                    {% if workers.number == num %}
+                                        <li class="pagination-item"><span class="pagination-link active">{{ num }}</span></li>
+                                    {% elif num > workers.number|add:'-3' and num < workers.number|add:'3' %}
+                                        <li class="pagination-item">
+                                            <a href="?page={{ num }}{% for key, value in current_filters.items %}{% if value and key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" class="pagination-link">{{ num }}</a>
+                                        </li>
+                                    {% endif %}
+                                {% endfor %}
+
+                                {% if workers.has_next %}
+                                <li class="pagination-item">
+                                    <a href="?page={{ workers.next_page_number }}{% for key, value in current_filters.items %}{% if value and key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" class="pagination-link" aria-label="Next page">
+                                        <i class="fas fa-angle-right"></i>
+                                    </a>
+                                </li>
+                                <li class="pagination-item">
+                                    <a href="?page={{ workers.paginator.num_pages }}{% for key, value in current_filters.items %}{% if value and key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" class="pagination-link" aria-label="Last page">
+                                        <i class="fas fa-angle-double-right"></i>
+                                    </a>
+                                </li>
+                                {% endif %}
+                            </ul>
+                        </nav>
+                        {% endif %}
                     {% else %}
                         <div class="empty-state">
                             <i class="fas fa-search"></i>

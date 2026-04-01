@@ -34,10 +34,27 @@
                             <span class="info-label"><i class="fas fa-calendar"></i> Date</span>
                             <span class="info-value">{{ booking.preferred_date|date:"M d, Y" }}</span>
                         </div>
+                        {% if booking.time_slots.all %}
+                        <div class="info-row">
+                            <span class="info-label"><i class="fas fa-clock"></i> Preferred Times</span>
+                            <span class="info-value">
+                                {% for slot in booking.time_slots.all %}
+                                    {{ slot.time|time:"h:i A" }}{% if not forloop.last %}, {% endif %}
+                                {% endfor %}
+                            </span>
+                        </div>
+                        {% else %}
                         <div class="info-row">
                             <span class="info-label"><i class="fas fa-clock"></i> Time</span>
                             <span class="info-value">{{ booking.preferred_time|time:"h:i A" }}</span>
                         </div>
+                        {% endif %}
+                        {% if booking.service_subtype %}
+                        <div class="info-row">
+                            <span class="info-label"><i class="fas fa-wrench"></i> Service Type</span>
+                            <span class="info-value">{{ booking.get_service_subtype_display }}</span>
+                        </div>
+                        {% endif %}
                         <div class="info-row">
                             <span class="info-label"><i class="fas fa-map-marker-alt"></i> Address</span>
                             <span class="info-value">{{ booking.address }}</span>
@@ -61,14 +78,27 @@
                             <p>₹{{ booking.worker.price_per_hour }}/hr</p>
                         </div>
                     </div>
+                    {% if booking.worker.phone %}
+                    <a href="tel:+91{{ booking.worker.phone }}" class="btn btn-call btn-block">
+                        <i class="fas fa-phone"></i> Call Worker: {{ booking.worker.phone }}
+                    </a>
+                    {% endif %}
                     {% else %}
                     <div class="person-info">
                         <div class="person-avatar"><i class="fas fa-user-circle"></i></div>
                         <div>
                             <strong>{{ booking.customer.get_full_name }}</strong>
                             <p>{{ booking.customer.email }}</p>
+                            {% if customer_phone %}
+                            <p><i class="fas fa-phone"></i> {{ customer_phone }}</p>
+                            {% endif %}
                         </div>
                     </div>
+                    {% if customer_phone %}
+                    <a href="tel:+91{{ customer_phone }}" class="btn btn-call btn-block">
+                        <i class="fas fa-phone"></i> Call Customer: {{ customer_phone }}
+                    </a>
+                    {% endif %}
                     {% endif %}
                 </div>
             </div>

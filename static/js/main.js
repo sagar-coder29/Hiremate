@@ -1,14 +1,120 @@
 document.addEventListener('DOMContentLoaded', function () {
+    // Dark mode toggle
+    const themeToggle = document.getElementById('themeToggle');
+    const html = document.documentElement;
+    
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    html.setAttribute('data-theme', savedTheme);
+    updateThemeIcon(savedTheme);
+    
+    if (themeToggle) {
+        themeToggle.addEventListener('click', function () {
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            html.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateThemeIcon(newTheme);
+        });
+    }
+    
+    function updateThemeIcon(theme) {
+        const icon = themeToggle?.querySelector('i');
+        if (icon) {
+            icon.className = theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+        }
+    }
+
     // Mobile nav toggle
     var navToggle = document.getElementById('navToggle');
     var navLinks = document.getElementById('navLinks');
     if (navToggle && navLinks) {
         navToggle.addEventListener('click', function () {
             navLinks.classList.toggle('active');
+            const expanded = navToggle.getAttribute('aria-expanded') === 'true';
+            navToggle.setAttribute('aria-expanded', !expanded);
         });
         document.addEventListener('click', function (e) {
             if (!navToggle.contains(e.target) && !navLinks.contains(e.target)) {
                 navLinks.classList.remove('active');
+                navToggle.setAttribute('aria-expanded', 'false');
+            }
+        });
+    }
+
+    // Search autocomplete
+    var heroSearch = document.getElementById('heroSearch');
+    var searchSuggestions = document.getElementById('searchSuggestions');
+    
+    if (heroSearch && searchSuggestions) {
+        var services = [
+            { name: 'Electrician', icon: 'fa-bolt', query: 'electrician' },
+            { name: 'Plumber', icon: 'fa-wrench', query: 'plumber' },
+            { name: 'Carpenter', icon: 'fa-hammer', query: 'carpenter' },
+            { name: 'Painter', icon: 'fa-paint-roller', query: 'painter' },
+            { name: 'Cleaner', icon: 'fa-broom', query: 'cleaner' },
+            { name: 'Mechanic', icon: 'fa-car', query: 'mechanic' },
+            { name: 'Gardener', icon: 'fa-leaf', query: 'gardener' },
+            { name: 'AC Repair', icon: 'fa-snowflake', query: 'ac_repair' },
+            { name: 'Pest Control', icon: 'fa-bug', query: 'pest_control' },
+            { name: 'Mover', icon: 'fa-truck', query: 'mover' }
+        ];
+        
+        var states = ['Maharashtra', 'Delhi', 'Karnataka', 'Tamil Nadu', 'Uttar Pradesh', 'West Bengal', 'Rajasthan', 'Gujarat', 'Telangana', 'Kerala'];
+        
+        heroSearch.addEventListener('input', function(e) {
+            var query = e.target.value.toLowerCase().trim();
+            
+            if (query.length < 2) {
+                searchSuggestions.classList.remove('active');
+                return;
+            }
+            
+            var matches = [];
+            
+            services.forEach(function(service) {
+                if (service.name.toLowerCase().includes(query)) {
+                    matches.push({
+                        type: 'service',
+                        name: service.name,
+                        icon: service.icon,
+                        url: '/profiles/workers/?service=' + service.query
+                    });
+                }
+            });
+            
+            states.forEach(function(state) {
+                if (state.toLowerCase().includes(query)) {
+                    matches.push({
+                        type: 'state',
+                        name: state,
+                        icon: 'fa-map-marker-alt',
+                        url: '/profiles/workers/?state=' + state.toLowerCase().replace(' ', '_')
+                    });
+                }
+            });
+            
+            if (matches.length > 0) {
+                searchSuggestions.innerHTML = matches.slice(0, 5).map(function(match) {
+                    return '<a href="' + match.url + '" class="search-suggestion">' +
+                           '<i class="fas ' + match.icon + '"></i>' +
+                           '<span>' + match.name + ' <small>(' + match.type + ')</small></span>' +
+                           '</a>';
+                }).join('');
+                searchSuggestions.classList.add('active');
+            } else {
+                searchSuggestions.classList.remove('active');
+            }
+        });
+        
+        heroSearch.addEventListener('blur', function() {
+            setTimeout(function() {
+                searchSuggestions.classList.remove('active');
+            }, 200);
+        });
+        
+        heroSearch.addEventListener('focus', function() {
+            if (heroSearch.value.length >= 2) {
+                searchSuggestions.classList.add('active');
             }
         });
     }

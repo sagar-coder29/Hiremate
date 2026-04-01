@@ -3,13 +3,13 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LoginView, LogoutView
 from django.shortcuts import redirect, render
 
-from profiles.models import CustomerProfile, WorkerProfile
+from profiles.models import CustomerProfile, SERVICE_CHOICES, WorkerProfile
 
 from .forms import CustomerRegistrationForm, LoginForm, WorkerRegistrationForm
 
 
 def home(request):
-    return render(request, "home.html")
+    return render(request, "home.html", {"service_choices": SERVICE_CHOICES})
 
 
 def register_customer(request):

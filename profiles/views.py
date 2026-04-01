@@ -1,13 +1,16 @@
 from django.contrib.auth.decorators import login_required
-from django.db.models import Q
+from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
+from django.db.models import Avg, Q
 from django.shortcuts import get_object_or_404, redirect, render
 
 from .forms import CustomerProfileForm, WorkerProfileForm
 from .models import SERVICE_CHOICES, STATE_CHOICES, CustomerProfile, WorkerProfile
 
+WORKERS_PER_PAGE = 12
+
 
 def worker_list(request):
-    workers = WorkerProfile.objects.filter(is_available=True)
+    workers = WorkerProfile.objects.filter(is_available=True).select_related("user")
 
     service = request.GET.get("service", "")
     if service:
@@ -31,7 +34,6 @@ def worker_list(request):
 
     min_rating = request.GET.get("min_rating", "")
     if min_rating:
-        from django.db.models import Avg
         from ratings.models import Rating
 
         worker_ids = (
@@ -59,20 +61,32 @@ def worker_list(request):
             | Q(bio__icontains=search)
         )
 
+    paginator = Paginator(workers, WORKERS_PER_PAGE)
+    page = request.GET.get("page", 1)
+    try:
+        workers_page = paginator.page(page)
+    except PageNotAnInteger:
+        workers_page = paginator.page(1)
+    except EmptyPage:
+        workers_page = paginator.page(paginator.num_pages)
+
+    current_filters = {
+        "service": service,
+        "state": state,
+        "city": city,
+        "min_price": min_price,
+        "max_price": max_price,
+        "min_rating": min_rating,
+        "sort": sort,
+        "q": search,
+    }
+
     context = {
-        "workers": workers,
+        "workers": workers_page,
         "service_choices": SERVICE_CHOICES,
         "state_choices": STATE_CHOICES,
-        "current_filters": {
-            "service": service,
-            "state": state,
-            "city": city,
-            "min_price": min_price,
-            "max_price": max_price,
-            "min_rating": min_rating,
-            "sort": sort,
-            "q": search,
-        },
+        "current_filters": current_filters,
+        "paginator": paginator,
     }
     return render(request, "profiles/worker_list.html", context)
 
