@@ -6,548 +6,578 @@
 {% block extra_head %}
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 {% endblock %}
 
 {% block content %}
-<section class="booking-section">
+<section class="booking-wizard-section">
     <div class="container">
-        <a href="{% url 'profiles:worker_detail' worker.pk %}" class="back-link"><i class="fas fa-arrow-left"></i> Back to Profile</a>
+        <a href="{% url 'profiles:worker_detail' worker.pk %}" class="back-link">
+            <i class="fas fa-arrow-left"></i> Back to Profile
+        </a>
 
-        <div class="booking-layout fade-in">
-            <div class="form-card">
-                <h2><i class="fas fa-calendar-plus"></i> Book Service</h2>
-                <p class="form-subtitle">Fill in the details for your booking request</p>
-
-                <form method="post" class="styled-form" id="booking-form">
-                    {% csrf_token %}
-                    
-                    <div class="form-group">
-                        <label>Service Type</label>
-                        <select id="service-subtype-select" class="form-control">
-                            <option value="">-- Select Service Type --</option>
-                        </select>
-                        <small class="field-help">Hiring: {{ worker.get_service_type_display }}</small>
-                        <input type="hidden" name="service_subtype" id="id_service_subtype" value="">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="id_description">{{ form.description.label }}</label>
-                        {{ form.description }}
-                        <small class="char-counter"><span id="desc-count">0</span>/500 characters</small>
-                        {% if form.description.errors %}
-                        <div class="field-error">{{ form.description.errors.0 }}</div>
-                        {% endif %}
-                    </div>
-
-                    <div class="form-group">
-                        <label for="id_preferred_date">{{ form.preferred_date.label }}</label>
-                        {{ form.preferred_date }}
-                        {% if form.preferred_date.errors %}
-                        <div class="field-error">{{ form.preferred_date.errors.0 }}</div>
-                        {% endif %}
-                    </div>
-
-                    <div class="form-group">
-                        <label>Preferred Time Slots</label>
-                        <div id="time-slots-container">
-                            <div class="time-slot-row">
-                                <input type="time" name="time_slots" class="time-slot-input form-control" required>
-                                <button type="button" class="btn-remove-time" onclick="removeTimeSlot(this)"><i class="fas fa-times"></i></button>
-                            </div>
-                        </div>
-                        <button type="button" class="btn btn-secondary btn-sm" id="add-time-slot" style="margin-top: 8px;">
-                            <i class="fas fa-plus"></i> Add Another Time Slot
-                        </button>
-                        <small class="field-help">Select up to 3 preferred times</small>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Address</label>
-                        {% if saved_addresses %}
-                        <select id="saved-address-select" class="form-control">
-                            <option value="">-- Select Saved Address --</option>
-                            {% for addr in saved_addresses %}
-                            <option value="{{ addr.id }}" data-address="{{ addr.address_line }}" data-locality="{{ addr.locality }}" data-city="{{ addr.city }}" data-state="{{ addr.state }}" data-pincode="{{ addr.pincode }}">
-                                {{ addr.label }} - {{ addr.city }}
-                            </option>
-                            {% endfor %}
-                            <option value="new">+ Add New Address</option>
-                        </select>
-                        {% endif %}
-                        
-                        <div class="address-input-method">
-                            <div class="address-tabs">
-                                <button type="button" class="address-tab active" data-tab="type">
-                                    <i class="fas fa-keyboard"></i> Type Address
-                                </button>
-                                <button type="button" class="address-tab" data-tab="map">
-                                    <i class="fas fa-map-marker-alt"></i> Pick on Map
-                                </button>
-                            </div>
-                            
-                            <div class="address-tab-content" id="tab-type">
-                                <div class="address-autocomplete-wrapper">
-                                    <input type="text" id="address-search" class="form-control" placeholder="Start typing to search address..." autocomplete="off">
-                                    <div id="autocomplete-results" class="autocomplete-results"></div>
-                                </div>
-                                {{ form.address }}
-                                {% if form.address.errors %}
-                                <div class="field-error">{{ form.address.errors.0 }}</div>
-                                {% endif %}
-                            </div>
-                            
-                            <div class="address-tab-content" id="tab-map" style="display: none;">
-                                <div class="map-controls">
-                                    <button type="button" class="btn btn-outline btn-sm" id="detect-location">
-                                        <i class="fas fa-location-crosshairs"></i> Use My Location
-                                    </button>
-                                    <span id="location-status" class="location-status"></span>
-                                </div>
-                                <div id="address-map" class="address-map"></div>
-                                <p class="map-hint"><i class="fas fa-info-circle"></i> Click on the map or search to set location</p>
-                                <input type="hidden" id="map-lat" name="map_lat">
-                                <input type="hidden" id="map-lng" name="map_lng">
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="form-group save-address-group">
-                        <label class="checkbox-label">
-                            {{ form.save_address }} Save this address for future bookings
-                        </label>
-                        <div id="address-label-field" style="display: none; margin-top: 8px;">
-                            {{ form.address_label }}
-                        </div>
-                    </div>
-
-                    <button type="submit" class="btn btn-primary btn-block">Send Booking Request</button>
-                </form>
+        <div class="booking-wizard fade-in">
+            <div class="wizard-header">
+                <h1><i class="fas fa-calendar-plus"></i> Book Service</h1>
+                <p>Complete the steps below to book {{ worker.user.get_full_name }}</p>
             </div>
 
-            <div class="booking-summary">
-                <div class="summary-card">
-                    <h3>Booking Summary</h3>
-                    <div class="summary-worker">
-                        <div class="worker-avatar-sm"><i class="fas fa-user-circle"></i></div>
-                        <div>
-                            <strong>{{ worker.user.get_full_name }}</strong>
-                            <span class="service-badge">{{ worker.get_service_type_display }}</span>
-                        </div>
+            <div class="wizard-progress">
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 0%"></div>
+                </div>
+                <div class="progress-steps">
+                    <div class="progress-step active" data-step="1">
+                        <div class="step-number">1</div>
+                        <div class="step-label">Service</div>
                     </div>
-                    <div class="summary-details">
-                        <div class="summary-row">
-                            <span>Location</span>
-                            <span>{{ worker.city }}, {{ worker.get_state_display }}</span>
-                        </div>
-                        <div class="summary-row">
-                            <span>Rate</span>
-                            <span>₹{{ worker.price_per_hour }}/hr</span>
-                        </div>
-                        <div class="summary-row">
-                            <span>Rating</span>
-                            <span>{{ worker.average_rating }}/5 ★</span>
-                        </div>
-                        <div class="summary-row">
-                            <span>Experience</span>
-                            <span>{{ worker.experience_years }} years</span>
-                        </div>
-                        {% if worker.phone %}
-                        <div class="summary-row">
-                            <span>Contact</span>
-                            <span><a href="tel:+91{{ worker.phone }}" class="contact-link"><i class="fas fa-phone"></i> {{ worker.phone }}</a></span>
-                        </div>
-                        {% endif %}
+                    <div class="progress-step" data-step="2">
+                        <div class="step-number">2</div>
+                        <div class="step-label">Details</div>
+                    </div>
+                    <div class="progress-step" data-step="3">
+                        <div class="step-number">3</div>
+                        <div class="step-label">Date & Time</div>
+                    </div>
+                    <div class="progress-step" data-step="4">
+                        <div class="step-number">4</div>
+                        <div class="step-label">Location</div>
+                    </div>
+                    <div class="progress-step" data-step="5">
+                        <div class="step-number">5</div>
+                        <div class="step-label">Payment</div>
+                    </div>
+                    <div class="progress-step" data-step="6">
+                        <div class="step-number">6</div>
+                        <div class="step-label">Confirmation</div>
                     </div>
                 </div>
             </div>
+
+            <form method="post" id="booking-form" class="booking-form">
+                {% csrf_token %}
+
+                <input type="hidden" name="worker_id" value="{{ worker.id }}">
+                <input type="hidden" name="service_type" id="id_service_type" value="">
+                <input type="hidden" name="service_subtype" id="id_service_subtype" value="">
+                <input type="hidden" name="address" id="id_address" value="">
+                <input type="hidden" name="map_lat" id="map-lat" value="">
+                <input type="hidden" name="map_lng" id="map-lng" value="">
+                <input type="hidden" name="locality" id="id_locality" value="">
+                <input type="hidden" name="city" id="id_city" value="">
+                <input type="hidden" name="state" id="id_state" value="">
+                <input type="hidden" name="pincode" id="id_pincode" value="">
+                <input type="hidden" name="time_slots_json" id="time-slots-json" value="">
+
+                <div class="wizard-steps-container">
+                    <div class="step step-active" data-step="1">
+                        <h3 class="step-title"><i class="fas fa-list-check"></i> Select Service</h3>
+                        <p class="step-description">Choose the type of service you need</p>
+                        
+                        <div class="service-cards-grid">
+                            <div class="service-card" data-service="electrical" data-price="500">
+                                <div class="service-card-icon">
+                                    <i class="fas fa-bolt"></i>
+                                </div>
+                                <div class="service-card-content">
+                                    <h4>Electrician</h4>
+                                    <p>Wiring, repairs, installations</p>
+                                </div>
+                                <div class="service-card-check">
+                                    <i class="fas fa-check"></i>
+                                </div>
+                            </div>
+
+                            <div class="service-card" data-service="plumbing" data-price="400">
+                                <div class="service-card-icon">
+                                    <i class="fas fa-wrench"></i>
+                                </div>
+                                <div class="service-card-content">
+                                    <h4>Plumber</h4>
+                                    <p>Pipes, leaks, fixtures</p>
+                                </div>
+                                <div class="service-card-check">
+                                    <i class="fas fa-check"></i>
+                                </div>
+                            </div>
+
+                            <div class="service-card" data-service="carpentry" data-price="600">
+                                <div class="service-card-icon">
+                                    <i class="fas fa-hammer"></i>
+                                </div>
+                                <div class="service-card-content">
+                                    <h4>Carpenter</h4>
+                                    <p>Furniture, woodwork, repairs</p>
+                                </div>
+                                <div class="service-card-check">
+                                    <i class="fas fa-check"></i>
+                                </div>
+                            </div>
+
+                            <div class="service-card" data-service="painting" data-price="450">
+                                <div class="service-card-icon">
+                                    <i class="fas fa-paint-roller"></i>
+                                </div>
+                                <div class="service-card-content">
+                                    <h4>Painter</h4>
+                                    <p>Indoor, outdoor, touch-ups</p>
+                                </div>
+                                <div class="service-card-check">
+                                    <i class="fas fa-check"></i>
+                                </div>
+                            </div>
+
+                            <div class="service-card" data-service="cleaning" data-price="350">
+                                <div class="service-card-icon">
+                                    <i class="fas fa-broom"></i>
+                                </div>
+                                <div class="service-card-content">
+                                    <h4>Cleaner</h4>
+                                    <p>Deep cleaning, regular upkeep</p>
+                                </div>
+                                <div class="service-card-check">
+                                    <i class="fas fa-check"></i>
+                                </div>
+                            </div>
+
+                            <div class="service-card" data-service="mechanic" data-price="550">
+                                <div class="service-card-icon">
+                                    <i class="fas fa-car"></i>
+                                </div>
+                                <div class="service-card-content">
+                                    <h4>Mechanic</h4>
+                                    <p>Vehicle repairs, servicing</p>
+                                </div>
+                                <div class="service-card-check">
+                                    <i class="fas fa-check"></i>
+                                </div>
+                            </div>
+
+                            <div class="service-card" data-service="gardening" data-price="400">
+                                <div class="service-card-icon">
+                                    <i class="fas fa-leaf"></i>
+                                </div>
+                                <div class="service-card-content">
+                                    <h4>Gardener</h4>
+                                    <p>Landscaping, lawn care</p>
+                                </div>
+                                <div class="service-card-check">
+                                    <i class="fas fa-check"></i>
+                                </div>
+                            </div>
+
+                            <div class="service-card" data-service="ac_repair" data-price="700">
+                                <div class="service-card-icon">
+                                    <i class="fas fa-snowflake"></i>
+                                </div>
+                                <div class="service-card-content">
+                                    <h4>AC Repair</h4>
+                                    <p>Installation, repairs, servicing</p>
+                                </div>
+                                <div class="service-card-check">
+                                    <i class="fas fa-check"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="selected-service-summary" id="selected-service-summary" style="display: none;">
+                            <div class="summary-row">
+                                <span>Selected Service:</span>
+                                <strong id="selected-service-name"></strong>
+                            </div>
+                            <div class="summary-row">
+                                <span>Base Rate:</span>
+                                <strong id="selected-service-price"></strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="step" data-step="2">
+                        <h3 class="step-title"><i class="fas fa-clipboard-list"></i> Service Details</h3>
+                        <p class="step-description">Describe what you need help with</p>
+                        
+                        <div class="glass-form">
+                            <div class="form-group">
+                                <label for="service-subtype">
+                                    <i class="fas fa-tag"></i> Service Type
+                                </label>
+                                <select id="service-subtype-select" class="form-control">
+                                    <option value="">-- Select Service Type --</option>
+                                </select>
+                                <small class="field-help">Hiring: {{ worker.get_service_type_display }}</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="id_description">
+                                    <i class="fas fa-edit"></i> Description
+                                    <span class="char-counter"><span id="desc-count">0</span>/500</span>
+                                </label>
+                                {{ form.description }}
+                                <small class="field-help">Be specific about what you need done</small>
+                                {% if form.description.errors %}
+                                <div class="field-error">{{ form.description.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="form-group">
+                                <label for="id_estimated_hours">
+                                    <i class="fas fa-clock"></i> Estimated Hours
+                                </label>
+                                <input type="number" id="id_estimated_hours" name="estimated_hours" 
+                                       class="form-control" min="1" max="12" value="1" placeholder="1">
+                                <small class="field-help">How long do you expect the service to take?</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="step" data-step="3">
+                        <h3 class="step-title"><i class="fas fa-calendar-alt"></i> Schedule</h3>
+                        <p class="step-description">Choose your preferred date and time</p>
+                        
+                        <div class="glass-form">
+                            <div class="form-group">
+                                <label for="id_preferred_date">
+                                    <i class="fas fa-calendar"></i> Preferred Date
+                                </label>
+                                <input type="date" id="id_preferred_date" name="preferred_date" 
+                                       class="form-control">
+                                {% if form.preferred_date.errors %}
+                                <div class="field-error">{{ form.preferred_date.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="form-group">
+                                <label><i class="fas fa-clock"></i> Preferred Time Slots</label>
+                                <div id="time-slots-container">
+                                    <div class="time-slot-row">
+                                        <input type="time" name="time_slots" class="time-slot-input form-control" required>
+                                        <button type="button" class="btn-remove-time" onclick="bookingWizard.removeTimeSlot(0)">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <button type="button" class="btn btn-secondary btn-sm" id="add-time-slot" style="margin-top: 8px;">
+                                    <i class="fas fa-plus"></i> Add Another Time Slot
+                                </button>
+                                <small class="field-help">Select up to 3 preferred times</small>
+                            </div>
+
+                            <div class="quick-time-buttons">
+                                <label>Quick Select:</label>
+                                <div class="time-presets">
+                                    <button type="button" class="time-preset" data-time="09:00">9:00 AM</button>
+                                    <button type="button" class="time-preset" data-time="12:00">12:00 PM</button>
+                                    <button type="button" class="time-preset" data-time="15:00">3:00 PM</button>
+                                    <button type="button" class="time-preset" data-time="18:00">6:00 PM</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="step" data-step="4">
+                        <h3 class="step-title"><i class="fas fa-map-marker-alt"></i> Location</h3>
+                        <p class="step-description">Where should the worker come?</p>
+                        
+                        <div class="glass-form">
+                            {% if saved_addresses %}
+                            <div class="form-group">
+                                <label>
+                                    <i class="fas fa-bookmark"></i> Saved Addresses
+                                </label>
+                                <select id="saved-address-select" class="form-control">
+                                    <option value="">-- Select Saved Address --</option>
+                                    {% for addr in saved_addresses %}
+                                    <option value="{{ addr.id }}" 
+                                            data-address="{{ addr.address_line }}" 
+                                            data-locality="{{ addr.locality }}"
+                                            data-city="{{ addr.city }}" 
+                                            data-state="{{ addr.state }}" 
+                                            data-pincode="{{ addr.pincode }}">
+                                        {{ addr.label }} - {{ addr.city }}
+                                    </option>
+                                    {% endfor %}
+                                    <option value="new">+ Add New Address</option>
+                                </select>
+                            </div>
+                            {% endif %}
+
+                            <div class="address-input-method">
+                                <div class="address-tabs">
+                                    <button type="button" class="address-tab active" data-tab="type">
+                                        <i class="fas fa-keyboard"></i> Type Address
+                                    </button>
+                                    <button type="button" class="address-tab" data-tab="map">
+                                        <i class="fas fa-map-marker-alt"></i> Pick on Map
+                                    </button>
+                                </div>
+
+                                <div class="address-tab-content" id="tab-type">
+                                    <div class="address-autocomplete-wrapper">
+                                        <input type="text" id="address-search" class="form-control" 
+                                               placeholder="Start typing to search address..." autocomplete="off">
+                                        <div id="autocomplete-results" class="autocomplete-results"></div>
+                                    </div>
+                                    
+                                    <div class="address-fields-grid">
+                                        <div class="form-group">
+                                            <label>Address Line</label>
+                                            <input type="text" id="address-line" class="form-control" 
+                                                   placeholder="Street address">
+                                        </div>
+                                        <div class="form-row">
+                                            <div class="form-group">
+                                                <label>Locality</label>
+                                                <input type="text" id="locality" class="form-control" 
+                                                       placeholder="Locality">
+                                            </div>
+                                            <div class="form-group">
+                                                <label>City</label>
+                                                <input type="text" id="city" class="form-control" 
+                                                       placeholder="City">
+                                            </div>
+                                        </div>
+                                        <div class="form-row">
+                                            <div class="form-group">
+                                                <label>State</label>
+                                                <input type="text" id="state" class="form-control" 
+                                                       placeholder="State">
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Pincode</label>
+                                                <input type="text" id="pincode" class="form-control" 
+                                                       placeholder="6-digit pincode" maxlength="6">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="address-tab-content" id="tab-map" style="display: none;">
+                                    <div class="map-controls">
+                                        <button type="button" class="btn btn-outline btn-sm" id="detect-location">
+                                            <i class="fas fa-location-crosshairs"></i> Use My Location
+                                        </button>
+                                        <span id="location-status" class="location-status"></span>
+                                    </div>
+                                    <div id="address-map" class="address-map"></div>
+                                    <p class="map-hint"><i class="fas fa-info-circle"></i> Click on the map or search to set location</p>
+                                </div>
+                            </div>
+
+                            <div class="form-group save-address-group">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="id_save_address" name="save_address"> 
+                                    Save this address for future bookings
+                                </label>
+                                <div id="address-label-field" style="display: none; margin-top: 8px;">
+                                    <input type="text" id="id_address_label" name="address_label" 
+                                           class="form-control" placeholder="e.g., Home, Office">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="step" data-step="5">
+                        <h3 class="step-title"><i class="fas fa-credit-card"></i> Payment</h3>
+                        <p class="step-description">Complete your payment securely</p>
+                        
+                        <div class="glass-form">
+                            <div class="booking-summary-card">
+                                <h4><i class="fas fa-user"></i> Worker</h4>
+                                <div class="summary-worker">
+                                    <div class="worker-avatar-sm"><i class="fas fa-user-circle"></i></div>
+                                    <div>
+                                        <strong>{{ worker.user.get_full_name }}</strong>
+                                        <span class="service-badge">{{ worker.get_service_type_display }}</span>
+                                    </div>
+                                </div>
+
+                                <h4><i class="fas fa-receipt"></i> Booking Summary</h4>
+                                <div class="summary-details">
+                                    <div class="summary-row">
+                                        <span>Service</span>
+                                        <span id="summary-service">Not selected</span>
+                                    </div>
+                                    <div class="summary-row">
+                                        <span>Date</span>
+                                        <span id="summary-date">Not selected</span>
+                                    </div>
+                                    <div class="summary-row">
+                                        <span>Time</span>
+                                        <span id="summary-time">Not selected</span>
+                                    </div>
+                                    <div class="summary-row">
+                                        <span>Location</span>
+                                        <span id="summary-location">Not set</span>
+                                    </div>
+                                </div>
+
+                                <h4><i class="fas fa-calculator"></i> Price Calculation</h4>
+                                <div class="price-calculation">
+                                    <div class="summary-row">
+                                        <span>Base Rate</span>
+                                        <span id="price-base">₹{{ worker.price_per_hour }}/hr</span>
+                                    </div>
+                                    <div class="summary-row">
+                                        <span>Estimated Hours</span>
+                                        <span id="price-hours">1 hr</span>
+                                    </div>
+                                    <div class="summary-row">
+                                        <span>Platform Fee (5%)</span>
+                                        <span id="price-platform">₹0</span>
+                                    </div>
+                                    <div class="summary-row total-row">
+                                        <span>Total Amount</span>
+                                        <span class="total-amount" id="price-total">₹0</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="payment-methods">
+                                <h4><i class="fas fa-wallet"></i> Select Payment Method</h4>
+                                
+                                <div class="payment-option selected" data-method="razorpay">
+                                    <div class="payment-option-radio">
+                                        <input type="radio" name="payment-method" value="razorpay" id="pm-razorpay" checked>
+                                    </div>
+                                    <div class="payment-option-content">
+                                        <label for="pm-razorpay">
+                                            <i class="fas fa-mobile-alt"></i> Razorpay
+                                        </label>
+                                        <p>Pay securely with cards, UPI, net banking, or wallets</p>
+                                    </div>
+                                    <div class="payment-option-logo">
+                                        <img src="https://cdn.razorpay.com/static/assets/logo/payment.svg" alt="Razorpay">
+                                    </div>
+                                </div>
+
+                                <div class="payment-option" data-method="paylater">
+                                    <div class="payment-option-radio">
+                                        <input type="radio" name="payment-method" value="paylater" id="pm-paylater">
+                                    </div>
+                                    <div class="payment-option-content">
+                                        <label for="pm-paylater">
+                                            <i class="fas fa-calendar-check"></i> Pay Later
+                                        </label>
+                                        <p>Pay after the service is completed</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="payment-security">
+                                <i class="fas fa-shield-alt"></i>
+                                <span>Your payment is secured with 256-bit SSL encryption</span>
+                            </div>
+
+                            <button type="button" class="btn btn-primary btn-block" id="proceed-payment">
+                                <i class="fas fa-lock"></i> Pay Now
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="step step-confirmation" data-step="6">
+                        <div class="confirmation-icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <h3 class="step-title">Booking Confirmed!</h3>
+                        <p class="step-description">Your service booking has been successfully submitted</p>
+                        
+                        <div class="booking-details-card">
+                            <div class="booking-id">
+                                <span>Booking ID:</span>
+                                <strong id="booking-id-display">#HM-XXXX</strong>
+                            </div>
+                            
+                            <div class="booking-info-grid">
+                                <div class="info-item">
+                                    <i class="fas fa-list-check"></i>
+                                    <div>
+                                        <label>Service</label>
+                                        <span id="confirm-service">N/A</span>
+                                    </div>
+                                </div>
+                                <div class="info-item">
+                                    <i class="fas fa-calendar"></i>
+                                    <div>
+                                        <label>Date</label>
+                                        <span id="confirm-date">N/A</span>
+                                    </div>
+                                </div>
+                                <div class="info-item">
+                                    <i class="fas fa-clock"></i>
+                                    <div>
+                                        <label>Time</label>
+                                        <span id="confirm-time">N/A</span>
+                                    </div>
+                                </div>
+                                <div class="info-item">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    <div>
+                                        <label>Location</label>
+                                        <span id="confirm-location">N/A</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="confirmation-actions">
+                            <button type="button" class="btn btn-secondary" onclick="window.print()">
+                                <i class="fas fa-print"></i> Print Receipt
+                            </button>
+                            <a href="{% url 'bookings:booking_list' %}" class="btn btn-primary">
+                                <i class="fas fa-list"></i> Track Booking
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="wizard-navigation">
+                    <button type="button" class="btn btn-secondary" id="wizard-prev" disabled>
+                        <i class="fas fa-arrow-left"></i> Previous
+                    </button>
+                    <button type="button" class="btn btn-primary" id="wizard-next">
+                        Next <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 </section>
+{% endblock %}
 
+{% block extra_js %}
 <script>
-const SERVICE_CHOICES = {{ service_choices|safe }};
-const WORKER_SERVICE_TYPE = '{{ worker.service_type }}';
-let map = null;
-let marker = null;
-let searchTimeout = null;
-
-function addTimeSlot() {
-    const container = document.getElementById('time-slots-container');
-    const rows = container.querySelectorAll('.time-slot-row');
-    if (rows.length >= 3) {
-        alert('Maximum 3 time slots allowed');
-        return;
-    }
-    const newRow = document.createElement('div');
-    newRow.className = 'time-slot-row';
-    newRow.innerHTML = `
-        <input type="time" name="time_slots" class="time-slot-input form-control" required>
-        <button type="button" class="btn-remove-time" onclick="removeTimeSlot(this)"><i class="fas fa-times"></i></button>
-    `;
-    container.appendChild(newRow);
-}
-
-function removeTimeSlot(btn) {
-    const container = document.getElementById('time-slots-container');
-    const rows = container.querySelectorAll('.time-slot-row');
-    if (rows.length > 1) {
-        btn.parentElement.remove();
-    }
-}
-
-function populateServiceTypes() {
-    const displaySelect = document.getElementById('service-subtype-select');
-    const hiddenInput = document.getElementById('id_service_subtype');
+    const SERVICE_CHOICES = {{ service_choices|safe }};
+    const WORKER_SERVICE_TYPE = '{{ worker.service_type }}';
+    const WORKER_PRICE = {{ worker.price_per_hour }};
+    const SERVICE_PRICES = {
+        'electrical': 500, 'plumbing': 400, 'carpentry': 600,
+        'painting': 450, 'cleaning': 350, 'mechanic': 550,
+        'gardening': 400, 'ac_repair': 700
+    };
+</script>
+<script src="{% static 'js/booking-wizard.js' %}"></script>
+<script>
+    window.RAZORPAY_KEY_ID = '{{ RAZORPAY_KEY_ID }}';
+    window.WORKER_ID = '{{ worker.id }}';
+    window.WORKER_PRICE = {{ worker.price_per_hour }};
     
-    displaySelect.innerHTML = '<option value="">-- Select Service Type --</option>';
-    
-    SERVICE_CHOICES.forEach(([value, label]) => {
-        const selected = value === WORKER_SERVICE_TYPE ? 'selected' : '';
-        displaySelect.innerHTML += `<option value="${value}" ${selected}>${label}</option>`;
-    });
-    
-    hiddenInput.value = WORKER_SERVICE_TYPE;
-    
-    displaySelect.addEventListener('change', function() {
-        hiddenInput.value = this.value;
-    });
-}
-
-function handleAddressSelection() {
-    const select = document.getElementById('saved-address-select');
-    const addressField = document.getElementById('id_address');
-    if (!select || !addressField) return;
-
-    select.addEventListener('change', function() {
-        if (this.value === 'new' || this.value === '') {
-            if (this.value === '') {
-                addressField.value = '';
-            }
-        } else {
-            const option = this.options[this.selectedIndex];
-            addressField.value = option.dataset.address || '';
-        }
-    });
-}
-
-function updateCharCounter() {
-    const desc = document.getElementById('id_description');
-    const counter = document.getElementById('desc-count');
-    if (desc && counter) {
-        desc.addEventListener('input', function() {
-            counter.textContent = this.value.length;
-        });
-        counter.textContent = desc.value.length;
-    }
-}
-
-function toggleAddressLabel() {
-    const checkbox = document.querySelector('.save-address-checkbox');
-    const labelField = document.getElementById('address-label-field');
-    if (checkbox && labelField) {
-        checkbox.addEventListener('change', function() {
-            labelField.style.display = this.checked ? 'block' : 'none';
-        });
-    }
-}
-
-function initMap() {
-    if (map) return;
-    
-    map = L.map('address-map').setView([20.5937, 78.9629], 5);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© OpenStreetMap contributors'
-    }).addTo(map);
-    
-    map.on('click', function(e) {
-        setMarker(e.latlng.lat, e.latlng.lng);
-        reverseGeocode(e.latlng.lat, e.latlng.lng);
-    });
-}
-
-function setMarker(lat, lng) {
-    if (marker) {
-        map.removeLayer(marker);
-    }
-    marker = L.marker([lat, lng]).addTo(map);
-    document.getElementById('map-lat').value = lat;
-    document.getElementById('map-lng').value = lng;
-}
-
-async function reverseGeocode(lat, lng) {
-    const status = document.getElementById('location-status');
-    status.textContent = 'Getting address...';
-    
-    try {
-        const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`);
-        const data = await response.json();
-        
-        if (data.display_name) {
-            document.getElementById('id_address').value = data.display_name;
-            status.textContent = '✓ Address found';
-            setTimeout(() => { status.textContent = ''; }, 2000);
-        }
-    } catch (error) {
-        status.textContent = 'Error getting address';
-    }
-}
-
-async function searchAddress(query) {
-    if (query.length < 3) return;
-    
-    const results = document.getElementById('autocomplete-results');
-    results.innerHTML = '<div class="search-loading">Searching...</div>';
-    
-    try {
-        const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5`);
-        const data = await response.json();
-        
-        results.innerHTML = '';
-        
-        if (data.length === 0) {
-            results.innerHTML = '<div class="search-no-results">No results found</div>';
-            return;
-        }
-        
-        data.forEach(item => {
-            const div = document.createElement('div');
-            div.className = 'autocomplete-item';
-            div.textContent = item.display_name;
-            div.addEventListener('click', function() {
-                document.getElementById('address-search').value = item.display_name;
-                document.getElementById('id_address').value = item.display_name;
-                document.getElementById('map-lat').value = item.lat;
-                document.getElementById('map-lng').value = item.lon;
-                results.innerHTML = '';
-                
-                const lat = parseFloat(item.lat);
-                const lng = parseFloat(item.lon);
-                if (map) {
-                    map.setView([lat, lng], 15);
-                    setMarker(lat, lng);
+    document.addEventListener('DOMContentLoaded', function() {
+        if (document.querySelector('.booking-wizard')) {
+            window.bookingWizard = new BookingWizard({
+                containerId: 'booking-wizard',
+                workerId: '{{ worker.id }}',
+                workerData: {
+                    bookingUrl: '{% url "bookings:create_booking" worker.id %}',
+                    certifications: []
+                },
+                onComplete: function(data) {
+                    console.log('Booking completed:', data);
+                },
+                onError: function(error) {
+                    console.error('Booking error:', error);
                 }
             });
-            results.appendChild(div);
-        });
-    } catch (error) {
-        results.innerHTML = '<div class="search-error">Search failed</div>';
-    }
-}
-
-function detectLocation() {
-    const status = document.getElementById('location-status');
-    
-    if (!navigator.geolocation) {
-        status.textContent = 'Geolocation not supported';
-        return;
-    }
-    
-    status.textContent = 'Detecting location...';
-    
-    navigator.geolocation.getCurrentPosition(
-        function(position) {
-            const lat = position.coords.latitude;
-            const lng = position.coords.longitude;
-            
-            if (!map) {
-                initMap();
-            }
-            
-            map.setView([lat, lng], 15);
-            setMarker(lat, lng);
-            reverseGeocode(lat, lng);
-            status.textContent = '✓ Location detected';
-            setTimeout(() => { status.textContent = ''; }, 2000);
-        },
-        function(error) {
-            status.textContent = 'Location denied';
-        }
-    );
-}
-
-function handleAddressTabs() {
-    const tabs = document.querySelectorAll('.address-tab');
-    const typeContent = document.getElementById('tab-type');
-    const mapContent = document.getElementById('tab-map');
-    
-    tabs.forEach(tab => {
-        tab.addEventListener('click', function() {
-            tabs.forEach(t => t.classList.remove('active'));
-            this.classList.add('active');
-            
-            const tabName = this.dataset.tab;
-            if (tabName === 'type') {
-                typeContent.style.display = 'block';
-                mapContent.style.display = 'none';
-            } else {
-                typeContent.style.display = 'none';
-                mapContent.style.display = 'block';
-                setTimeout(() => {
-                    if (!map) initMap();
-                    map.invalidateSize();
-                }, 100);
-            }
-        });
-    });
-}
-
-function handleAddressSearch() {
-    const searchInput = document.getElementById('address-search');
-    
-    searchInput.addEventListener('input', function() {
-        clearTimeout(searchTimeout);
-        searchTimeout = setTimeout(() => {
-            searchAddress(this.value);
-        }, 300);
-    });
-    
-    document.addEventListener('click', function(e) {
-        if (!e.target.closest('.address-autocomplete-wrapper')) {
-            document.getElementById('autocomplete-results').innerHTML = '';
         }
     });
-}
-
-document.addEventListener('DOMContentLoaded', function() {
-    populateServiceTypes();
-    handleAddressSelection();
-    updateCharCounter();
-    toggleAddressLabel();
-    handleAddressTabs();
-    handleAddressSearch();
-    document.getElementById('add-time-slot').addEventListener('click', addTimeSlot);
-    document.getElementById('detect-location').addEventListener('click', detectLocation);
-});
 </script>
-
-<style>
-.time-slot-row {
-    display: flex;
-    gap: 8px;
-    margin-bottom: 8px;
-}
-.time-slot-row .time-slot-input {
-    flex: 1;
-}
-.btn-remove-time {
-    background: #dc3545;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    padding: 8px 12px;
-    cursor: pointer;
-}
-.btn-remove-time:hover {
-    background: #c82333;
-}
-.char-counter {
-    display: block;
-    text-align: right;
-    color: #666;
-    font-size: 12px;
-    margin-top: 4px;
-}
-.contact-link {
-    color: var(--primary);
-}
-.contact-link:hover {
-    text-decoration: underline;
-}
-
-.address-tabs {
-    display: flex;
-    gap: 8px;
-    margin-bottom: 12px;
-}
-.address-tab {
-    flex: 1;
-    padding: 10px 16px;
-    border: 2px solid var(--gray-300);
-    background: var(--white);
-    border-radius: var(--radius);
-    cursor: pointer;
-    font-weight: 500;
-    transition: var(--transition);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-}
-.address-tab:hover {
-    border-color: var(--primary);
-    color: var(--primary);
-}
-.address-tab.active {
-    border-color: var(--primary);
-    background: var(--primary);
-    color: var(--white);
-}
-
-.address-autocomplete-wrapper {
-    position: relative;
-    margin-bottom: 8px;
-}
-#autocomplete-results {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    background: var(--white);
-    border: 1px solid var(--gray-300);
-    border-radius: var(--radius);
-    max-height: 200px;
-    overflow-y: auto;
-    z-index: 100;
-    box-shadow: var(--shadow-lg);
-}
-.autocomplete-item {
-    padding: 10px 14px;
-    cursor: pointer;
-    border-bottom: 1px solid var(--gray-100);
-    font-size: 14px;
-}
-.autocomplete-item:hover {
-    background: var(--gray-100);
-}
-.autocomplete-item:last-child {
-    border-bottom: none;
-}
-.search-loading, .search-no-results, .search-error {
-    padding: 10px 14px;
-    color: var(--gray-500);
-    font-size: 14px;
-}
-
-.map-controls {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 10px;
-}
-.location-status {
-    font-size: 13px;
-    color: var(--success);
-}
-.btn-outline {
-    background: transparent;
-    border: 1px solid var(--gray-300);
-    color: var(--gray-700);
-}
-.btn-outline:hover {
-    border-color: var(--primary);
-    color: var(--primary);
-}
-
-.address-map {
-    height: 250px;
-    border-radius: var(--radius);
-    border: 1px solid var(--gray-300);
-    margin-bottom: 8px;
-}
-.map-hint {
-    font-size: 12px;
-    color: var(--gray-500);
-    margin: 0;
-}
-</style>
 {% endblock %}
