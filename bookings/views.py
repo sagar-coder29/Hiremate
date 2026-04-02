@@ -1,11 +1,19 @@
+import razorpay
+from decimal import Decimal
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 
 from profiles.models import WorkerProfile
 
 from .forms import BookingForm
 from .models import Booking
+
+razorpay_client = razorpay.Client(
+    auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET)
+)
 
 
 @login_required
@@ -173,3 +181,86 @@ def update_booking_status(request, pk, status):
         messages.error(request, "Invalid status transition.")
 
     return redirect("bookings:booking_detail", pk=pk)
+
+
+@login_required
+def create_razorpay_order(request):
+    if request.method == "POST":
+        booking_id = request.POST.get("booking_id")
+        amount = request.POST.get("amount")
+
+        try:
+            from bookings.models import Booking, Payment
+
+            booking = Booking.objects.get(id=booking_id, customer=request.user)
+        except Booking.DoesNotExist:
+            return JsonResponse({"error": "Booking not found"}, status=404)
+
+        order_data = {
+            "amount": int(float(amount) * 100),
+            "currency": "INR",
+            "receipt": f"booking_{booking_id}",
+            "notes": {"booking_id": str(booking_id), "customer": request.user.email},
+        }
+
+        order = razorpay_client.order.create(data=order_data)
+
+        Payment.objects.create(
+            booking=booking,
+            razorpay_order_id=order["id"],
+            amount=Decimal(amount),
+            status="pending",
+        )
+
+        return JsonResponse(
+            {"order_id": order["id"], "amount": order_data["amount"], "currency": "INR"}
+        )
+
+    return JsonResponse({"error": "Invalid request"}, status=400)
+
+
+@login_required
+def verify_payment(request):
+    if request.method == "POST":
+        razorpay_order_id = request.POST.get("razorpay_order_id")
+        razorpay_payment_id = request.POST.get("razorpay_payment_id")
+        razorpay_signature = request.POST.get("razorpay_signature")
+
+        from bookings.models import Payment
+
+        try:
+            payment = Payment.objects.get(razorpay_order_id=razorpay_order_id)
+
+            params_dict = {
+                "razorpay_order_id": razorpay_order_id,
+                "razorpay_payment_id": razorpay_payment_id,
+                "razorpay_signature": razorpay_signature,
+            }
+
+            try:
+                razorpay_client.utility.verify_payment_signature(params_dict)
+
+                payment.razorpay_payment_id = razorpay_payment_id
+                payment.razorpay_signature = razorpay_signature
+                payment.status = "completed"
+                payment.save()
+
+                payment.booking.is_paid = True
+                payment.booking.save()
+
+                return JsonResponse(
+                    {"status": "success", "booking_id": payment.booking.id}
+                )
+
+            except razorpay.errors.SignatureVerificationError:
+                payment.status = "failed"
+                payment.save()
+                return JsonResponse(
+                    {"status": "failed", "error": "Signature verification failed"},
+                    status=400,
+                )
+
+        except Payment.DoesNotExist:
+            return JsonResponse({"error": "Payment not found"}, status=404)
+
+    return JsonResponse({"error": "Invalid request"}, status=400)
