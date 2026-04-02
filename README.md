@@ -1,8 +1,14 @@
 # HireMate - Job Marketplace Platform
 
-![HireMate Logo](https://raw.githubusercontent.com/sagar-coder29/Hiremate/main/static/images/logo.png)
+<p align="center">
+  <img src="static/images/logo.png" alt="HireMate Logo" width="180"/>
+</p>
 
-A modern, visually stunning job marketplace platform where customers can find and hire skilled workers for various services.
+<p align="center">
+  <strong>Connecting Communities Through Trusted Service Professionals</strong>
+  <br>
+  A Modern Job Marketplace Platform with Stunning UI/UX
+</p>
 
 ---
 
@@ -11,16 +17,19 @@ A modern, visually stunning job marketplace platform where customers can find an
 ### Core Features
 - **User Authentication** - Secure login/registration for customers and workers with social auth support (Google)
 - **Worker Discovery** - Browse and search through verified service providers with filtering
-- **Booking System** - Easy booking with date/time selection and status tracking
+- **Simplified Booking System** - Easy single-page booking with service type selection based on worker specialty
 - **Rating & Reviews** - Rate workers after completed services (1-5 stars)
 - **User Profiles** - Separate profiles for customers and workers
 
 ### Booking Enhancements
+- **Smart Service Selection** - Service types automatically filter based on worker's specialty (e.g., Electrician shows only Wiring, Repair, Installation, Maintenance)
+- **Google Maps Integration** - Interactive map for location selection with address search and auto-detect
+- **Address Search** - Real-time address search using OpenStreetMap/Nominatim
+- **Click on Map** - Pick exact location by clicking on interactive map
+- **Use My Location** - Auto-detect current location for quick address entry
 - **Address Auto-Fill** - Save multiple addresses and auto-fill from saved locations
-- **Multiple Time Slots** - Select up to 3 preferred time slots for booking
-- **Service Sub-Categories** - Choose specific service types (Installation, Repair, Maintenance, etc.)
-- **Click-to-Call** - Direct call buttons for workers and customers on booking details
-- **Enhanced Description** - Character-limited description with live counter
+- **Price Calculator** - Real-time price calculation with platform fee
+- **Pay After Service** - Hassle-free payment option
 
 ### UI/UX Features ✨
 - **Modern Glassmorphism Design** - Frosted glass effects with backdrop blur
@@ -89,25 +98,17 @@ The home page features an analytics section with:
 ![Home Page Hero](static/images/screenshots/home-hero.png)
 *Modern 3D animated hero with glassmorphism background, floating orbs, and gradient mesh*
 
-### Services Section
-![Services](static/images/screenshots/services.png)
-*Service cards with smooth hover animations and cursor-pointer feedback*
+### Login Page
+![Login](static/images/screenshots/login.png)
+*Clean and modern login page with glassmorphic design*
 
-### Trust Section
-![Trust](static/images/screenshots/trust-section.png)
-*Trust-building section highlighting platform safety features*
-
-### Analytics Dashboard
-![Analytics](static/images/screenshots/analytics.png)
-*Interactive Chart.js powered analytics with year-over-year comparison*
+### Register Page
+![Register](static/images/screenshots/register.png)
+*Easy registration for customers and workers*
 
 ### Worker Listing
 ![Workers](static/images/screenshots/workers.png)
 *Browse and filter service providers with verified badges*
-
-### Booking Flow
-![Booking](static/images/screenshots/booking.png)
-*Simple and intuitive booking process with date/time picker*
 
 ---
 
@@ -120,11 +121,18 @@ The home page features an analytics section with:
 
 ### Frontend
 - **HTML5, CSS3, JavaScript** - Core web technologies
-- **Tailwind CSS** - Utility-first CSS framework
+- **Custom CSS** - Modern styling with glassmorphism
 - **Chart.js** - Interactive charts and data visualization
 - **Font Awesome 6** - Icon library
 - **Google Fonts** - Inter font family
-- **Custom CSS Animations** - 3D effects, glassmorphism, particles
+- **Leaflet.js** - Interactive maps
+- **OpenStreetMap** - Map tiles and geocoding
+
+### Maps & Location
+- **Leaflet.js** - Interactive map display
+- **OpenStreetMap** - Free map tiles
+- **Nominatim API** - Address search and reverse geocoding
+- **Geolocation API** - Browser-based location detection
 
 ### Hosting
 - **PythonAnywhere** - Primary hosting
@@ -241,6 +249,13 @@ Edit `static/css/style.css` CSS variables:
 
 ## 📝 Recent Updates
 
+### v3.1 (April 2026)
+- **Simplified Booking Page** - Removed multi-step wizard, single-page form
+- **Smart Service Selection** - Service types filter based on worker's specialty
+- **Google Maps Integration** - Interactive map with address search
+- **Location Auto-Detect** - Use My Location button for quick address entry
+- **Click on Map** - Pick exact location by clicking on map
+
 ### v3.0 (April 2026)
 - **UI/UX Pro Max Design System** - Professional glassmorphism design
 - **3D Animated Background** - Floating glassmorphic blobs, orbs, and particles
@@ -287,14 +302,43 @@ This project is open source and available under the MIT License.
 
 ---
 
-## 🙏 Acknowledgments
+## 🙏 Acknowledgments & Partners
 
-- [Font Awesome](https://fontawesome.com) for icons
-- [Google Fonts](https://fonts.google.com) for typography
-- [Chart.js](https://www.chartjs.org/) for data visualization
-- [Tailwind CSS](https://tailwindcss.com) for styling
-- [UI/UX Pro Max](https://uupm.cc/) for design system inspiration
-- [shadcn/ui](https://ui.shadcn.com/) for UI inspiration
+Special thanks to our amazing development partners:
+
+### AI Development Partner 🤖
+**OpenCode (big-pickle model)**
+- Collaborative coding assistant
+- Feature development and bug fixes
+- Code review and optimization
+- Documentation improvements
+
+### Human Team Members
+- **Sagar Kumar Jha** - Lead Developer & Project Owner
+
+### Technology Partners
+- [Django](https://www.djangoproject.com/) - Backend Framework
+- [Font Awesome](https://fontawesome.com) - Icons
+- [Google Fonts](https://fonts.google.com) - Typography
+- [Chart.js](https://www.chartjs.org/) - Data Visualization
+- [Leaflet.js](https://leafletjs.com/) - Interactive Maps
+- [OpenStreetMap](https://www.openstreetmap.org/) - Map Data
+- [UI/UX Pro Max](https://uix.today/) - Design System Inspiration
+- [shadcn/ui](https://ui.shadcn.com/) - UI Inspiration
+
+---
+
+## 💝 Special Thanks
+
+This project was built with the invaluable assistance of **OpenCode** - an AI-powered coding assistant that helped with:
+- Architectural decisions
+- Feature implementation
+- UI/UX improvements
+- Bug fixes and debugging
+- Code optimization
+- Documentation
+
+Without this partnership, many of the advanced features wouldn't be possible. Thank you for being an amazing coding companion!
 
 ---
 

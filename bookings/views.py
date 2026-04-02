@@ -83,6 +83,8 @@ def create_booking(request, worker_pk):
             "worker": worker,
             "saved_addresses": saved_addresses,
             "service_choices": SERVICE_CHOICES,
+            "GOOGLE_MAPS_API_KEY": settings.GOOGLE_MAPS_API_KEY,
+            "RAZORPAY_KEY_ID": settings.RAZORPAY_KEY_ID,
         },
     )
 
