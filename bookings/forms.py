@@ -65,3 +65,19 @@ class BookingForm(forms.ModelForm):
             ] + list(choices)
         else:
             self.fields["service_subtype"].widget = forms.HiddenInput()
+
+    latitude = forms.FloatField(required=False)
+    longitude = forms.FloatField(required=False)
+    map_address = forms.CharField(required=False, widget=forms.Textarea())
+    estimated_hours = forms.DecimalField(
+        min_value=0.5,
+        initial=1,
+        widget=forms.NumberInput(attrs={"min": "0.5", "step": "0.5"}),
+    )
+
+
+class PaymentForm(forms.Form):
+    amount = forms.DecimalField(widget=forms.HiddenInput())
+    razorpay_order_id = forms.CharField(widget=forms.HiddenInput())
+    razorpay_payment_id = forms.CharField(required=False, widget=forms.HiddenInput())
+    razorpay_signature = forms.CharField(required=False, widget=forms.HiddenInput())
