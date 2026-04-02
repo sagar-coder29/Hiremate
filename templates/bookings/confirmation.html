@@ -1,0 +1,659 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Booking Confirmed - HireMate{% endblock %}
+
+{% block content %}
+<section class="confirmation-page">
+    <div class="confetti-container" id="confetti-container"></div>
+    
+    <div class="container">
+        <div class="confirmation-wrapper fade-in">
+            <div class="success-animation">
+                <div class="checkmark-circle">
+                    <div class="checkmark draw"></div>
+                </div>
+                <h1 class="success-title">Booking Confirmed!</h1>
+                <p class="success-subtitle">Your service has been successfully booked</p>
+                <div class="booking-id-badge">
+                    <span class="id-label">Booking ID</span>
+                    <span class="id-value">#HM-{{ booking.id }}</span>
+                </div>
+            </div>
+
+            <div class="glass-card booking-details-card">
+                <div class="card-header">
+                    <h2><i class="fas fa-clipboard-check"></i> Booking Details</h2>
+                </div>
+                
+                <div class="worker-info">
+                    <div class="worker-avatar">
+                        {% if booking.worker.profile_picture %}
+                        <img src="{{ booking.worker.profile_picture.url }}" alt="{{ booking.worker.user.get_full_name }}">
+                        {% else %}
+                        <i class="fas fa-user-circle"></i>
+                        {% endif %}
+                    </div>
+                    <div class="worker-details">
+                        <h3>{{ booking.worker.user.get_full_name }}</h3>
+                        <span class="service-badge">{{ booking.worker.get_service_type_display }}</span>
+                    </div>
+                </div>
+
+                <div class="details-grid">
+                    <div class="detail-item">
+                        <i class="fas fa-list-check"></i>
+                        <div>
+                            <span class="detail-label">Service</span>
+                            <span class="detail-value">{% if booking.service_subtype %}{{ booking.get_service_subtype_display }}{% else %}{{ booking.worker.get_service_type_display }}{% endif %}</span>
+                        </div>
+                    </div>
+                    <div class="detail-item">
+                        <i class="fas fa-calendar"></i>
+                        <div>
+                            <span class="detail-label">Date</span>
+                            <span class="detail-value">{{ booking.preferred_date|date:"M d, Y" }}</span>
+                        </div>
+                    </div>
+                    <div class="detail-item">
+                        <i class="fas fa-clock"></i>
+                        <div>
+                            <span class="detail-label">Time</span>
+                            <span class="detail-value">
+                                {% if booking.time_slots.all %}
+                                    {% for slot in booking.time_slots.all %}
+                                        {{ slot.time|time:"h:i A" }}{% if not forloop.last %}, {% endif %}
+                                    {% endfor %}
+                                {% else %}
+                                    {{ booking.preferred_time|time:"h:i A" }}
+                                {% endif %}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="detail-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <div>
+                            <span class="detail-label">Location</span>
+                            <span class="detail-value">{{ booking.address }}</span>
+                        </div>
+                    </div>
+                    <div class="detail-item">
+                        <i class="fas fa-money-bill-wave"></i>
+                        <div>
+                            <span class="detail-label">Total Paid</span>
+                            <span class="detail-value price">₹{{ booking.total_amount }}</span>
+                        </div>
+                    </div>
+                    <div class="detail-item">
+                        <i class="fas fa-credit-card"></i>
+                        <div>
+                            <span class="detail-label">Payment Status</span>
+                            <span class="payment-status-badge">
+                                {% if booking.payment_status == 'completed' %}
+                                <span class="badge badge-success"><i class="fas fa-check-circle"></i> Paid</span>
+                                {% elif booking.payment_status == 'pending' %}
+                                <span class="badge badge-warning"><i class="fas fa-clock"></i> Pending</span>
+                                {% else %}
+                                <span class="badge badge-info">{{ booking.get_payment_status_display }}</span>
+                                {% endif %}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="next-steps-card glass-card">
+                <h2><i class="fas fa-lightbulb"></i> What's Next?</h2>
+                <ul class="next-steps-list">
+                    <li>
+                        <span class="step-number">1</span>
+                        <div class="step-content">
+                            <strong>Confirmation Sent</strong>
+                            <p>We've sent a confirmation to your email and WhatsApp</p>
+                        </div>
+                    </li>
+                    <li>
+                        <span class="step-number">2</span>
+                        <div class="step-content">
+                            <strong>Worker Will Contact You</strong>
+                            <p>{{ booking.worker.user.get_full_name }} will reach out to confirm the schedule</p>
+                        </div>
+                    </li>
+                    <li>
+                        <span class="step-number">3</span>
+                        <div class="step-content">
+                            <strong>Service Completion</strong>
+                            <p>After the service, you can rate your experience</p>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="action-buttons">
+                <a href="{% url 'bookings:booking_detail' booking.id %}" class="btn btn-primary btn-lg">
+                    <i class="fas fa-track"></i> Track Booking
+                </a>
+                <a href="{% url 'profiles:worker_list' %}" class="btn btn-secondary btn-lg">
+                    <i class="fas fa-plus-circle"></i> Book Another Service
+                </a>
+                <button class="btn btn-whatsapp btn-lg" onclick="shareOnWhatsApp()">
+                    <i class="fab fa-whatsapp"></i> Share on WhatsApp
+                </button>
+            </div>
+
+            <div class="support-card glass-card">
+                <div class="support-icon">
+                    <i class="fas fa-headset"></i>
+                </div>
+                <div class="support-content">
+                    <h3>Need Help?</h3>
+                    <p>Our support team is here to assist you</p>
+                    <div class="support-links">
+                        <a href="tel:+919999999999"><i class="fas fa-phone"></i> +91 9999 999 999</a>
+                        <a href="mailto:support@hiremate.com"><i class="fas fa-envelope"></i> support@hiremate.com</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.confirmation-page {
+    padding: 40px 0 60px;
+    min-height: calc(100vh - 200px);
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+.confetti-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1000;
+    overflow: hidden;
+}
+
+.confetti {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    opacity: 0;
+}
+
+@keyframes confetti-fall {
+    0% {
+        transform: translateY(-100px) rotate(0deg);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(100vh) rotate(720deg);
+        opacity: 0;
+    }
+}
+
+.confirmation-wrapper {
+    max-width: 700px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+}
+
+.success-animation {
+    text-align: center;
+    padding: 40px 20px;
+    margin-bottom: 30px;
+}
+
+.checkmark-circle {
+    width: 120px;
+    height: 120px;
+    background: linear-gradient(135deg, #10b981, #059669);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 24px;
+    box-shadow: 0 10px 40px rgba(16, 185, 129, 0.4);
+    animation: scale-in 0.5s ease-out;
+}
+
+.checkmark {
+    width: 50px;
+    height: 50px;
+    position: relative;
+}
+
+.checkmark.draw:after {
+    animation-delay: 0.5s;
+    animation-duration: 0.6s;
+    animation-timing-function: ease;
+    animation-name: check;
+    transform: scaleX(-1) rotate(135deg);
+}
+
+.checkmark:after {
+    opacity: 0;
+    height: 25px;
+    width: 50px;
+    transform-origin: left top;
+    border-right: 8px solid white;
+    border-top: 8px solid white;
+    content: '';
+    left: 5px;
+    top: 20px;
+    position: absolute;
+}
+
+@keyframes scale-in {
+    0% {
+        transform: scale(0);
+        opacity: 0;
+    }
+    50% {
+        transform: scale(1.1);
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes check {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+.success-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 8px;
+    background: linear-gradient(135deg, #10b981, #059669);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.success-subtitle {
+    font-size: 1.1rem;
+    color: #64748b;
+    margin-bottom: 20px;
+}
+
+.booking-id-badge {
+    display: inline-flex;
+    flex-direction: column;
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    color: white;
+    padding: 12px 28px;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(124, 58, 237, 0.3);
+}
+
+.booking-id-badge .id-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    opacity: 0.9;
+}
+
+.booking-id-badge .id-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.booking-details-card {
+    margin-bottom: 24px;
+}
+
+.card-header {
+    margin-bottom: 20px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.card-header h2 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #1e293b;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.card-header h2 i {
+    color: var(--primary);
+}
+
+.worker-info {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px;
+    background: linear-gradient(135deg, rgba(124, 58, 237, 0.05), rgba(124, 58, 237, 0.1));
+    border-radius: 12px;
+    margin-bottom: 20px;
+}
+
+.worker-avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: white;
+    border: 3px solid var(--primary);
+}
+
+.worker-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.worker-avatar i {
+    font-size: 48px;
+    color: var(--primary);
+}
+
+.worker-details h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #1e293b;
+    margin-bottom: 4px;
+}
+
+.worker-details .service-badge {
+    font-size: 0.8rem;
+    padding: 4px 10px;
+    background: var(--primary);
+    color: white;
+    border-radius: 20px;
+}
+
+.details-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+}
+
+.detail-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.detail-item > i {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
+    border-radius: 10px;
+    color: var(--primary);
+    font-size: 0.9rem;
+    flex-shrink: 0;
+}
+
+.detail-item > div {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.detail-label {
+    font-size: 0.75rem;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.detail-value {
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: #1e293b;
+}
+
+.detail-value.price {
+    color: #10b981;
+    font-weight: 700;
+}
+
+.next-steps-card {
+    margin-bottom: 24px;
+}
+
+.next-steps-card h2 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #1e293b;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.next-steps-card h2 i {
+    color: #f59e0b;
+}
+
+.next-steps-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.next-steps-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+}
+
+.step-number {
+    width: 28px;
+    height: 28px;
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 0.85rem;
+    flex-shrink: 0;
+}
+
+.step-content strong {
+    display: block;
+    color: #1e293b;
+    font-size: 0.95rem;
+    margin-bottom: 2px;
+}
+
+.step-content p {
+    color: #64748b;
+    font-size: 0.85rem;
+    margin: 0;
+}
+
+.action-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: center;
+    margin-bottom: 24px;
+}
+
+.btn-lg {
+    padding: 14px 28px;
+    font-size: 1rem;
+    border-radius: 12px;
+}
+
+.btn-whatsapp {
+    background: linear-gradient(135deg, #25D366, #128C7E);
+    color: white;
+    border: none;
+}
+
+.btn-whatsapp:hover {
+    background: linear-gradient(135deg, #20BD5A, #0D6E62);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(37, 211, 102, 0.4);
+}
+
+.support-card {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+    text-align: left;
+}
+
+.support-icon {
+    width: 56px;
+    height: 56px;
+    background: linear-gradient(135deg, #6366f1, #4f46e5);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.support-icon i {
+    font-size: 24px;
+    color: white;
+}
+
+.support-content h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #1e293b;
+    margin-bottom: 4px;
+}
+
+.support-content p {
+    color: #64748b;
+    font-size: 0.85rem;
+    margin-bottom: 8px;
+}
+
+.support-links {
+    display: flex;
+    gap: 20px;
+}
+
+.support-links a {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--primary);
+    font-size: 0.85rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.support-links a:hover {
+    color: var(--primary-dark);
+}
+
+@media (max-width: 640px) {
+    .success-title {
+        font-size: 2rem;
+    }
+    
+    .details-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .action-buttons {
+        flex-direction: column;
+    }
+    
+    .action-buttons .btn {
+        width: 100%;
+    }
+    
+    .support-card {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .support-links {
+        justify-content: center;
+    }
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function createConfetti() {
+    const container = document.getElementById('confetti-container');
+    const colors = ['#10b981', '#6366f1', '#f59e0b', '#ec4899', '#8b5cf6', '#06b6d4'];
+    const shapes = ['square', 'circle', 'triangle'];
+    
+    for (let i = 0; i < 100; i++) {
+        const confetti = document.createElement('div');
+        confetti.className = 'confetti';
+        
+        const color = colors[Math.floor(Math.random() * colors.length)];
+        const shape = shapes[Math.floor(Math.random() * shapes.length)];
+        
+        confetti.style.background = color;
+        confetti.style.left = Math.random() * 100 + '%';
+        confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
+        confetti.style.animationDelay = (Math.random() * 1) + 's';
+        confetti.style.animation = `confetti-fall ${Math.random() * 2 + 2}s linear forwards`;
+        
+        if (shape === 'circle') {
+            confetti.style.borderRadius = '50%';
+        } else if (shape === 'triangle') {
+            confetti.style.width = '0';
+            confetti.style.height = '0';
+            confetti.style.background = 'transparent';
+            confetti.style.borderLeft = '5px solid transparent';
+            confetti.style.borderRight = '5px solid transparent';
+            confetti.style.borderBottom = '10px solid ' + color;
+        }
+        
+        confetti.style.width = Math.random() * 8 + 6 + 'px';
+        confetti.style.height = Math.random() * 8 + 6 + 'px';
+        
+        container.appendChild(confetti);
+    }
+}
+
+function shareOnWhatsApp() {
+    const bookingId = '{{ booking.id }}';
+    const workerName = '{{ booking.worker.user.get_full_name }}';
+    const date = '{{ booking.preferred_date|date:"M d, Y" }}';
+    const message = `🎉 My HireMate Booking is Confirmed!\n\nBooking ID: #HM-${bookingId}\nWorker: ${workerName}\nDate: ${date}\n\nBook your services at HireMate!`;
+    const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, '_blank');
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    createConfetti();
+});
+</script>
+{% endblock %}
