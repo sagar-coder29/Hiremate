@@ -29,6 +29,12 @@ class Booking(models.Model):
     preferred_time = models.TimeField(blank=True, null=True)
     service_subtype = models.CharField(max_length=30, blank=True)
     address = models.TextField()
+    latitude = models.FloatField(null=True, blank=True)
+    longitude = models.FloatField(null=True, blank=True)
+    map_address = models.TextField(blank=True)
+    estimated_hours = models.DecimalField(max_digits=4, decimal_places=1, default=1)
+    total_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    is_paid = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -52,3 +58,25 @@ class BookingTimeSlot(models.Model):
 
     def __str__(self):
         return f"{self.booking} - {self.time}"
+
+
+class Payment(models.Model):
+    STATUS_CHOICES = (
+        ("pending", "Pending"),
+        ("completed", "Completed"),
+        ("failed", "Failed"),
+        ("refunded", "Refunded"),
+    )
+
+    booking = models.OneToOneField(
+        Booking, on_delete=models.CASCADE, related_name="payment"
+    )
+    razorpay_order_id = models.CharField(max_length=100, unique=True)
+    razorpay_payment_id = models.CharField(max_length=100, blank=True)
+    razorpay_signature = models.CharField(max_length=200, blank=True)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="pending")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Payment #{self.id} - {self.booking}"
